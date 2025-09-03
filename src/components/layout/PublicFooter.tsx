@@ -6,9 +6,9 @@ import { useBusinessInfo } from '@/hooks/useBusinessInfo';
 export const PublicFooter: React.FC = () => {
   const { businessInfo } = useBusinessInfo();
   const shopName = businessInfo?.name || 'Modern Cuts';
-  const address = businessInfo?.address || '123 Main Street\nNew York, NY 10001';
+  const address = '3820 Sherwood Dr #280, Sherwood Park, AB T8H 0Z9';
   const phone = businessInfo?.phone || '(555) 123-4567';
-  const email = businessInfo?.email || 'info@moderncuts.com';
+  const email = "Gentzhouse@gmail.com";
 
   // Social media links from business info (only include if present)
   const socials = [

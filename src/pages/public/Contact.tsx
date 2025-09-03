@@ -54,9 +54,10 @@ export const Contact: React.FC = () => {
   const { toast } = useToast();
   const { businessInfo } = useBusinessInfo();
 
-  const addressLines = businessInfo?.address?.split('\n') || ['123 Main Street', 'New York, NY 10001'];
+
+  const addressLines = "3820 Sherwood Dr #280, Sherwood Park, AB T8H 0Z9";
   const phoneNumber = businessInfo?.phone || '(555) 123-4567';
-  const email = businessInfo?.email || 'info@moderncuts.com';
+  const email = "Gentzhouse@gmail.com";
 
   // NEW: Build Google Maps "Get Directions" link dynamically based on the business address.
   const googleMapsUrl = React.useMemo(() => {
@@ -241,12 +242,8 @@ export const Contact: React.FC = () => {
                       <div>
                         <h3 className="font-semibold mb-2">Visit Us</h3>
                         <p className="text-muted-foreground">
-                          {addressLines.map((l, idx) => (
-                            <React.Fragment key={idx}>
-                              {l}
-                              {idx !== addressLines.length - 1 && <br />}
-                            </React.Fragment>
-                          ))}
+                          {addressLines}
+                           
                         </p>
                       </div>
                       <Button variant="default" className="w-full mt-auto" asChild>
@@ -315,7 +312,7 @@ export const Contact: React.FC = () => {
                         <div className="space-y-1 text-muted-foreground">
                           <p>Phone: {phoneNumber}</p>
                           <p>Email: {email}</p>
-                          <p>Live Chat Available</p>
+                          {/* <p>Live Chat Available</p> */}
                         </div>
                       </div>
                       <Button variant="default" className="w-full mt-auto" asChild>
