@@ -30,8 +30,8 @@ export const apiClient = async <T>(
   const { skipAuth = false } = options;
   const token = skipAuth ? null : getToken();
   // const baseUrl = getApiBaseUrl();
-  const baseUrl = "http://localhost:5000/api";
-  // const baseUrl = "https://barber-shop-server-lilac.vercel.app/api";
+  // const baseUrl = "http://localhost:5000/api";
+  const baseUrl = "https://barber-shop-server-lilac.vercel.app/api";
 
 
   // getApiBaseUrl();
