@@ -1,0 +1,49 @@
+# UI Components (except those used by calendar)
+src/components/ui/*
+hooks/use-toast.ts
+
+# Admin pages (except calendar)
+src/pages/AdminAppointment.tsx
+src/pages/AdminDashboard.tsx
+src/pages/AdminProducts.tsx
+src/pages/AdminReviews.tsx
+src/pages/AdminSettings.tsx
+src/pages/AdminUsers.tsx
+src/pages/Customers.tsx
+src/pages/Dashboard.tsx
+src/pages/GSTSettings.tsx
+# src/pages/Reports.tsx
+src/pages/Services.tsx
+src/pages/Settings.tsx
+src/pages/StaffManagement.tsx
+src/pages/Login.tsx
+src/pages/POS.tsx
+src/pages/Slots.tsx
+src/pages/staff/*
+src/pages/billing/*
+
+# Admin features (except calendar/appointments)
+src/features/customers/*
+src/features/pos/*
+src/features/services/*
+src/features/staff/*
+
+# Keep calendar-related files
+src/pages/AdminCalendar.tsx
+src/features/appointments/FullCalendarView.tsx
+src/features/appointments/AppointmentDetailsDialog.tsx
+
+# Keep only appointment features needed for calendar
+src/features/appointments/NewAppointmentDialog.tsx
+src/features/appointments/ServicePicker.tsx
+src/features/appointments/AppointmentList.tsx
+
+# Admin components
+# src/components/dashboard/*
+# src/components/ProtectedRoute.tsx
+
+# Public pages are included (not ignored)
+
+# Ignore all admin feature directories
+src/features/admin/*
+
