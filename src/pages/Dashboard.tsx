@@ -1,54 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, DollarSign, BarChart, Loader2 } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { StatsCard } from '@/components/dashboard/StatsCard';
-import { RevenueChart } from '@/components/dashboard/RevenueChart';
-import { AppointmentList, SimpleAppointment } from '@/components/dashboard/AppointmentList';
-import { PerformanceTable } from '@/components/dashboard/PerformanceTable';
-import { PageHeader } from '@/components/layout';
-import { formatCurrency } from '@/utils';
-import { useToast } from '@/hooks/use-toast';
-import { ServicePerformance, StaffPerformance, RevenueData, Appointment } from '@/types';
-import { useDashboard, DashboardPeriod } from '@/hooks/useDashboard';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { format } from 'date-fns';
-import { RescheduleAppointmentDialog } from '@/features/appointments/RescheduleAppointmentDialog';
-import { getAdminAppointments, Appointment as ApiAppointment } from '@/api/services/appointmentService';
-import { CompleteAppointmentDialog } from '@/features/appointments/CompleteAppointmentDialog';
+import React, { useState, useEffect } from "react";
+import { Calendar, DollarSign, BarChart, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { StatsCard } from "@/components/dashboard/StatsCard";
+import { RevenueChart } from "@/components/dashboard/RevenueChart";
+import {
+  AppointmentList,
+  SimpleAppointment,
+} from "@/components/dashboard/AppointmentList";
+import { PerformanceTable } from "@/components/dashboard/PerformanceTable";
+import { PageHeader } from "@/components/layout";
+import { formatCurrency } from "@/utils";
+import { useToast } from "@/hooks/use-toast";
+import {
+  ServicePerformance,
+  StaffPerformance,
+  RevenueData,
+  Appointment,
+} from "@/types";
+import { useDashboard, DashboardPeriod } from "@/hooks/useDashboard";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from "date-fns";
+import { RescheduleAppointmentDialog } from "@/features/appointments/RescheduleAppointmentDialog";
+import {
+  getAdminAppointments,
+  Appointment as ApiAppointment,
+} from "@/api/services/appointmentService";
+import { CompleteAppointmentDialog } from "@/features/appointments/CompleteAppointmentDialog";
 
 export const Dashboard: React.FC = () => {
   const { toast } = useToast();
-  const [period, setPeriod] = useState<DashboardPeriod>('weekly');
+  const [period, setPeriod] = useState<DashboardPeriod>("weekly");
   const { dashboardData, isLoading, error, refetch } = useDashboard(period);
-  const [cachedData, setCachedData] = useState<typeof dashboardData | null>(null);
-  
+  const [cachedData, setCachedData] = useState<typeof dashboardData | null>(
+    null
+  );
+
   // State for today's appointments
   const [todayAppointments, setTodayAppointments] = useState<Appointment[]>([]);
-  const [loadingTodayAppointments, setLoadingTodayAppointments] = useState(false);
+  const [loadingTodayAppointments, setLoadingTodayAppointments] =
+    useState(false);
 
   // State for upcoming appointments (to allow local patching without refetch)
-  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
-  
+  const [upcomingAppointments, setUpcomingAppointments] = useState<
+    Appointment[]
+  >([]);
+
   // State for reschedule dialog
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
-  const [appointmentToReschedule, setAppointmentToReschedule] = useState<Appointment | null>(null);
+  const [appointmentToReschedule, setAppointmentToReschedule] =
+    useState<Appointment | null>(null);
 
   // State for complete dialog
-  const [appointmentToComplete, setAppointmentToComplete] = useState<ApiAppointment | null>(null);
+  const [appointmentToComplete, setAppointmentToComplete] =
+    useState<ApiAppointment | null>(null);
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
 
   // Handle error
   useEffect(() => {
     if (error) {
       toast({
-        title: 'Error',
+        title: "Error",
         description: `Failed to load dashboard data: ${error.message}`,
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   }, [error, toast]);
-  
+
   // Handle period change
   const handlePeriodChange = (newPeriod: DashboardPeriod) => {
     setPeriod(newPeriod);
@@ -58,41 +76,44 @@ export const Dashboard: React.FC = () => {
   const fetchTodayAppointments = async () => {
     try {
       setLoadingTodayAppointments(true);
-      const today = format(new Date(), 'yyyy-MM-dd');
-      const response = await getAdminAppointments(1, 100, 'time_asc', today);
-      
+      const today = format(new Date(), "yyyy-MM-dd");
+      const response = await getAdminAppointments(1, 100, "time_asc", today);
+
       // Convert API appointments to the format expected by AppointmentList
-      const mappedAppointments: Appointment[] = response.appointments.map(apt => ({
-        id: apt.id,
-        customerId: apt.customer?.id || '',
-        customerName: apt.customer?.name || 'Unknown Customer',
-        customerPhone: apt.customer?.phone || '',
-        customerEmail: apt.customer?.email || undefined,
-        staffId: apt.staff?.id || '',
-        staffName: apt.staff?.user?.name || 'Unknown Staff',
-        date: apt.date,
-        time: apt.time,
-        endTime: apt.end_time || '',
-        services: apt.appointmentServices?.map(s => ({
-          serviceId: s.service?.id || '',
-          serviceName: s.service?.name || '',
-          price: s.price || 0,
-          duration: s.duration || 0
-        })) || [],
-        status: (apt.status || 'scheduled') as Appointment['status'],
-        totalAmount: apt.total_amount || 0,
-        notes: apt.notes,
-        createdAt: apt.createdAt || new Date().toISOString(),
-        updatedAt: apt.updatedAt || apt.createdAt || new Date().toISOString()
-      }));
-      
+      const mappedAppointments: Appointment[] = response.appointments.map(
+        (apt) => ({
+          id: apt.id,
+          customerId: apt.customer?.id || "",
+          customerName: apt.customer?.name || "Unknown Customer",
+          customerPhone: apt.customer?.phone || "",
+          customerEmail: apt.customer?.email || undefined,
+          staffId: apt.staff?.id || "",
+          staffName: apt.staff?.user?.name || "Unknown Staff",
+          date: apt.date,
+          time: apt.time,
+          endTime: apt.end_time || "",
+          services:
+            apt.appointmentServices?.map((s) => ({
+              serviceId: s.service?.id || "",
+              serviceName: s.service?.name || "",
+              price: s.price || 0,
+              duration: s.duration || 0,
+            })) || [],
+          status: (apt.status || "scheduled") as Appointment["status"],
+          totalAmount: apt.total_amount || 0,
+          notes: apt.notes,
+          createdAt: apt.createdAt || new Date().toISOString(),
+          updatedAt: apt.updatedAt || apt.createdAt || new Date().toISOString(),
+        })
+      );
+
       setTodayAppointments(mappedAppointments);
     } catch (error) {
-      console.error('Error fetching today\'s appointments:', error);
+      console.error("Error fetching today's appointments:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to load today\'s appointments',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to load today's appointments",
+        variant: "destructive",
       });
     } finally {
       setLoadingTodayAppointments(false);
@@ -123,9 +144,9 @@ export const Dashboard: React.FC = () => {
       totalAmount: appointment.totalAmount,
       notes: appointment.notes,
       createdAt: appointment.createdAt || new Date().toISOString(),
-      updatedAt: appointment.updatedAt || new Date().toISOString()
+      updatedAt: appointment.updatedAt || new Date().toISOString(),
     };
-    
+
     setAppointmentToReschedule(fullAppointment);
     setShowRescheduleDialog(true);
   };
@@ -133,14 +154,11 @@ export const Dashboard: React.FC = () => {
   // Handle reschedule complete
   const handleRescheduleComplete = (updatedAppointment: ApiAppointment) => {
     // Refresh data after rescheduling
-    Promise.all([
-      refetch(),
-      fetchTodayAppointments()
-    ]);
-    
+    Promise.all([refetch(), fetchTodayAppointments()]);
+
     toast({
-      title: 'Appointment Rescheduled',
-      description: `Appointment for ${updatedAppointment.customer_name} has been rescheduled.`
+      title: "Appointment Rescheduled",
+      description: `Appointment for ${updatedAppointment.customer_name} has been rescheduled.`,
     });
   };
 
@@ -149,30 +167,46 @@ export const Dashboard: React.FC = () => {
     // Transform API appointment into UI format matching todayAppointments
     const transformed: Appointment = {
       id: updatedAppt.id,
-      customerId: updatedAppt.customer_id || updatedAppt.customer?.id || '',
-      customerName: updatedAppt.customer_name || updatedAppt.customer?.name || 'Unknown Customer',
-      customerPhone: updatedAppt.customer_phone || updatedAppt.customer?.phone || '',
-      customerEmail: updatedAppt.customer_email || updatedAppt.customer?.email || undefined,
-      staffId: updatedAppt.staff_id || updatedAppt.staff?.id || '',
-      staffName: updatedAppt.staff_name || updatedAppt.staff?.user?.name || 'Unknown Staff',
+      customerId: updatedAppt.customer_id || updatedAppt.customer?.id || "",
+      customerName:
+        updatedAppt.customer_name ||
+        updatedAppt.customer?.name ||
+        "Unknown Customer",
+      customerPhone:
+        updatedAppt.customer_phone || updatedAppt.customer?.phone || "",
+      customerEmail:
+        updatedAppt.customer_email || updatedAppt.customer?.email || undefined,
+      staffId: updatedAppt.staff_id || updatedAppt.staff?.id || "",
+      staffName:
+        updatedAppt.staff_name ||
+        updatedAppt.staff?.user?.name ||
+        "Unknown Staff",
       date: updatedAppt.date,
       time: updatedAppt.time,
-      endTime: updatedAppt.end_time || '',
-      services: (updatedAppt.appointmentServices || []).map(s => ({
+      endTime: updatedAppt.end_time || "",
+      services: (updatedAppt.appointmentServices || []).map((s) => ({
         serviceId: s.service_id,
         serviceName: s.service_name,
         price: s.price,
-        duration: s.duration
+        duration: s.duration,
       })),
-      status: updatedAppt.status as Appointment['status'],
+      status: updatedAppt.status as Appointment["status"],
       totalAmount: updatedAppt.total_amount || 0,
       notes: updatedAppt.notes,
-      createdAt: updatedAppt.created_at || updatedAppt.createdAt || new Date().toISOString(),
-      updatedAt: updatedAppt.updated_at || updatedAppt.updatedAt || new Date().toISOString()
+      createdAt:
+        updatedAppt.created_at ||
+        updatedAppt.createdAt ||
+        new Date().toISOString(),
+      updatedAt:
+        updatedAppt.updated_at ||
+        updatedAppt.updatedAt ||
+        new Date().toISOString(),
     };
 
     // Update todayAppointments state (and any other local lists in future)
-    setTodayAppointments(prev => prev.map(appt => appt.id === transformed.id ? transformed : appt));
+    setTodayAppointments((prev) =>
+      prev.map((appt) => (appt.id === transformed.id ? transformed : appt))
+    );
 
     // TODO: If the appointment belongs to upcoming list, we could patch cachedData too.
 
@@ -190,62 +224,70 @@ export const Dashboard: React.FC = () => {
   const dataToShow = cachedData ?? dashboardData;
 
   // Build chart data with fallback zero point to keep chart visible
-  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const todayStr = format(new Date(), "yyyy-MM-dd");
 
   const appointmentStats = dataToShow?.appointmentStats ?? [];
   const revenueStats = dataToShow?.revenueStats ?? [];
 
-  const appointmentChartData: RevenueData[] = (appointmentStats.length ? appointmentStats : [{ date: todayStr, count: 0 }]).map(stat => ({
+  const appointmentChartData: RevenueData[] = (
+    appointmentStats.length ? appointmentStats : [{ date: todayStr, count: 0 }]
+  ).map((stat) => ({
     date: stat.date,
-    revenue: stat.count // Using revenue field to store appointment count
+    revenue: stat.count, // Using revenue field to store appointment count
   }));
 
-  const revenueChartData: RevenueData[] = (revenueStats.length ? revenueStats : [{ date: todayStr, revenue: '0' }]).map((stat: {date:string; revenue?: string}) => ({
+  const revenueChartData: RevenueData[] = (
+    revenueStats.length ? revenueStats : [{ date: todayStr, revenue: "0" }]
+  ).map((stat: { date: string; revenue?: string }) => ({
     date: stat.date,
-    revenue: parseFloat(stat.revenue ?? '0')
+    revenue: parseFloat(stat.revenue ?? "0"),
   }));
 
   // Map top services for the performance table
-  const servicePerformanceData: ServicePerformance[] = dataToShow?.topServices?.map(service => ({
-    id: service.service_id || `service-${service.service_name}`,
-    name: service.service_name,
-    bookings: service.bookings,
-    revenue: parseFloat(service.revenue || '0')
-  })) || [];
+  const servicePerformanceData: ServicePerformance[] =
+    dataToShow?.topServices?.map((service) => ({
+      id: service.service_id || `service-${service.service_name}`,
+      name: service.service_name,
+      bookings: service.bookings,
+      revenue: parseFloat(service.revenue || "0"),
+    })) || [];
 
   // Map top staff for the performance table
-  const staffPerformanceData: StaffPerformance[] = dataToShow?.topStaff?.map(staff => ({
-    id: staff.staff_id || `staff-${staff.staff_name}`,
-    name: staff.staff_name,
-    appointments: staff.appointments,
-    revenue: parseFloat(staff.revenue || '0'),
-    commissionEarned: 0 // Not provided in API, could be calculated if needed
-  })) || [];
+  const staffPerformanceData: StaffPerformance[] =
+    dataToShow?.topStaff?.map((staff) => ({
+      id: staff.staff_id || `staff-${staff.staff_name}`,
+      name: staff.staff_name,
+      appointments: staff.appointments,
+      revenue: parseFloat(staff.revenue || "0"),
+      commissionEarned: 0, // Not provided in API, could be calculated if needed
+    })) || [];
 
   // Convert API appointments to the format expected by AppointmentList
-  const mappedAppointments: Appointment[] = dataToShow?.upcomingAppointments?.map(apt => ({
-    id: apt.id,
-    customerId: apt.customer?.id || '',
-    customerName: apt.customer?.name || 'Unknown Customer',
-    customerPhone: apt.customer?.phone || '',
-    customerEmail: apt.customer?.email || undefined,
-    staffId: apt.staff?.id || '',
-    staffName: apt.staff?.user?.name || 'Unknown Staff',
-    date: apt.date,
-    time: apt.time,
-    endTime: apt.end_time || '',
-    services: apt.appointmentServices?.map(s => ({
-      serviceId: s.service?.id || '',
-      serviceName: s.service?.name || '',
-      price: s.price || 0,
-      duration: s.duration || 0
-    })) || [],
-    status: (apt.status || 'scheduled') as Appointment['status'],
-    totalAmount: apt.total_amount || 0,
-    notes: apt.notes,
-    createdAt: apt.createdAt || new Date().toISOString(),
-    updatedAt: apt.updatedAt || apt.createdAt || new Date().toISOString()
-  })) || [];
+  const mappedAppointments: Appointment[] =
+    dataToShow?.upcomingAppointments?.map((apt) => ({
+      id: apt.id,
+      customerId: apt.customer?.id || "",
+      customerName: apt.customer?.name || "Unknown Customer",
+      customerPhone: apt.customer?.phone || "",
+      customerEmail: apt.customer?.email || undefined,
+      staffId: apt.staff?.id || "",
+      staffName: apt.staff?.user?.name || "Unknown Staff",
+      date: apt.date,
+      time: apt.time,
+      endTime: apt.end_time || "",
+      services:
+        apt.appointmentServices?.map((s) => ({
+          serviceId: s.service?.id || "",
+          serviceName: s.service?.name || "",
+          price: s.price || 0,
+          duration: s.duration || 0,
+        })) || [],
+      status: (apt.status || "scheduled") as Appointment["status"],
+      totalAmount: apt.total_amount || 0,
+      notes: apt.notes,
+      createdAt: apt.createdAt || new Date().toISOString(),
+      updatedAt: apt.updatedAt || apt.createdAt || new Date().toISOString(),
+    })) || [];
 
   // Keep upcomingAppointments in sync when server data changes
   useEffect(() => {
@@ -255,7 +297,7 @@ export const Dashboard: React.FC = () => {
   if (isLoading && !dataToShow) {
     return (
       <div className="space-y-6">
-        <PageHeader 
+        <PageHeader
           title="Loading dashboard..."
           description="Please wait while we load your dashboard data"
         />
@@ -291,25 +333,28 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Dashboard" 
+      <PageHeader
+        title="Dashboard"
         description="Overview of your barber shop business"
       />
-      
+
       {dataToShow && (
         <>
           {/* Appointments Sections - Moved to the top */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Today's Appointments */}
             <div>
-              <AppointmentList 
-                title="Today's Appointments" 
+              <AppointmentList
+                title="Today's Appointments"
                 appointments={todayAppointments}
                 showActions={true}
                 allowCompletion={true}
                 onRefresh={fetchTodayAppointments}
                 onReschedule={handleRescheduleAppointment}
-                onCompleteAppointment={(appt)=>{setAppointmentToComplete(appt as unknown as ApiAppointment); setShowCompleteDialog(true);}}
+                onCompleteAppointment={(appt) => {
+                  setAppointmentToComplete(appt as unknown as ApiAppointment);
+                  setShowCompleteDialog(true);
+                }}
               />
               {loadingTodayAppointments && (
                 <div className="flex justify-center items-center h-20">
@@ -317,48 +362,60 @@ export const Dashboard: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Upcoming Appointments */}
             <div>
-              <AppointmentList 
-                title="Upcoming Appointments" 
+              <AppointmentList
+                title="Upcoming Appointments"
                 appointments={upcomingAppointments}
                 showActions={true}
                 allowCompletion={false}
                 onRefresh={refetch}
                 onReschedule={handleRescheduleAppointment}
                 onStatusPatched={(id, status) => {
-                  setUpcomingAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+                  setUpcomingAppointments((prev) =>
+                    prev.map((a) => (a.id === id ? { ...a, status } : a))
+                  );
 
                   // Also update cached dashboard data so later re-renders keep the new status
-                  setCachedData(prev => {
+                  setCachedData((prev) => {
                     if (!prev) return prev;
-                    const updatedUpcoming = prev.upcomingAppointments?.map(a =>
-                      a.id === id ? { ...a, status } : a
-                    ) || [];
-                    return { ...prev, upcomingAppointments: updatedUpcoming } as typeof prev;
+                    const updatedUpcoming =
+                      prev.upcomingAppointments?.map((a) =>
+                        a.id === id ? { ...a, status } : a
+                      ) || [];
+                    return {
+                      ...prev,
+                      upcomingAppointments: updatedUpcoming,
+                    } as typeof prev;
                   });
                 }}
-                onCompleteAppointment={(appt)=>{setAppointmentToComplete(appt as unknown as ApiAppointment); setShowCompleteDialog(true);}}
+                onCompleteAppointment={(appt) => {
+                  setAppointmentToComplete(appt as unknown as ApiAppointment);
+                  setShowCompleteDialog(true);
+                }}
               />
             </div>
           </div>
-          
+
           {/* Calculate tip percentage with proper type handling */}
           {(() => {
             const tipPercentage = dataToShow.summary?.avgTipPercentage;
-            const formattedTipPercentage = typeof tipPercentage === 'number' 
-              ? tipPercentage.toFixed(1) 
-              : typeof tipPercentage === 'string' 
-                ? Number(parseFloat(tipPercentage)).toFixed(1) 
-                : '0.0';
-            
+            const formattedTipPercentage =
+              typeof tipPercentage === "number"
+                ? tipPercentage.toFixed(1)
+                : typeof tipPercentage === "string"
+                ? Number(parseFloat(tipPercentage)).toFixed(1)
+                : "0.0";
+
             return (
               /* Stats Cards Row */
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
                 <StatsCard
                   title="Total Revenue"
-                  value={formatCurrency(parseFloat(dataToShow.summary.totalRevenue || '0'))}
+                  value={formatCurrency(
+                    parseFloat(dataToShow.summary.totalRevenue || "0")
+                  )}
                   icon={<DollarSign className="h-4 w-4" />}
                   description="period revenue"
                   trend={{ value: 0, positive: true }}
@@ -379,7 +436,9 @@ export const Dashboard: React.FC = () => {
                 />
                 <StatsCard
                   title="Tips Received"
-                  value={formatCurrency(parseFloat(dataToShow.summary.totalTips || '0'))}
+                  value={formatCurrency(
+                    parseFloat(dataToShow.summary.totalTips || "0")
+                  )}
                   icon={<DollarSign className="h-4 w-4" />}
                   description={`${formattedTipPercentage}% average`}
                   trend={{ value: 0, positive: true }}
@@ -387,9 +446,15 @@ export const Dashboard: React.FC = () => {
               </div>
             );
           })()}
-          
+
           {/* Period selection */}
-          <Tabs defaultValue={period} onValueChange={(value) => handlePeriodChange(value as DashboardPeriod)} className="mt-6">
+          <Tabs
+            defaultValue={period}
+            onValueChange={(value) =>
+              handlePeriodChange(value as DashboardPeriod)
+            }
+            className="mt-6"
+          >
             <TabsList className="grid grid-cols-4 w-full max-w-md">
               <TabsTrigger value="daily">Daily</TabsTrigger>
               <TabsTrigger value="weekly">Weekly</TabsTrigger>
@@ -400,18 +465,18 @@ export const Dashboard: React.FC = () => {
 
           {/* Charts Row (rendered once, driven by selected period) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <RevenueChart 
-              title="Appointments Over Time" 
-              data={appointmentChartData} 
+            <RevenueChart
+              title="Appointments Over Time"
+              data={appointmentChartData}
               className="col-span-1"
               loading={isLoading && !!cachedData}
               yAxisFormatter={(v) => `${v}`}
               valueFormatter={(v) => `${v}`}
               tooltipName="Appointments"
             />
-            <RevenueChart 
-              title="Revenue Over Time" 
-              data={revenueChartData} 
+            <RevenueChart
+              title="Revenue Over Time"
+              data={revenueChartData}
               className="col-span-1"
               loading={isLoading && !!cachedData}
             />
@@ -434,16 +499,21 @@ export const Dashboard: React.FC = () => {
               loading={isLoading && !!cachedData}
             />
           </div>
-          
+
           {/* Status Distribution */}
           <div className="mt-6">
             <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-4">Appointment Status Distribution</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                Appointment Status Distribution
+              </h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {dataToShow.appointmentStatusDistribution.map((status) => (
                   <StatsCard
                     key={status.status}
-                    title={status.status.charAt(0).toUpperCase() + status.status.slice(1)}
+                    title={
+                      status.status.charAt(0).toUpperCase() +
+                      status.status.slice(1)
+                    }
                     value={status.count.toString()}
                     icon={<BarChart className="h-4 w-4" />}
                     description="appointments"
@@ -453,7 +523,7 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Reschedule Dialog */}
           {appointmentToReschedule && (
             <RescheduleAppointmentDialog
@@ -463,7 +533,7 @@ export const Dashboard: React.FC = () => {
               onRescheduleComplete={handleRescheduleComplete}
             />
           )}
-          
+
           {/* Complete Dialog */}
           {appointmentToComplete && (
             <CompleteAppointmentDialog
