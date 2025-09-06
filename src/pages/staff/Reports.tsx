@@ -649,7 +649,7 @@ export const StaffReports: React.FC = () => {
                             : 0
                         )}
                       </TableCell>
-                       <TableCell className="text-right">
+                      <TableCell className="text-right">
                         ${service.totalPayOut}
                       </TableCell>
                     </TableRow>
