@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { format, subDays } from 'date-fns';
+import React, { useState, useEffect, useCallback } from "react";
+import { format, subDays } from "date-fns";
 import {
   Calendar as CalendarIcon,
   Download,
@@ -8,17 +8,23 @@ import {
   DollarSign,
   TrendingUp,
   Users,
-  Loader2
-} from 'lucide-react';
-import { PageHeader } from '@/components/layout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+  Loader2,
+} from "lucide-react";
+import { PageHeader } from "@/components/layout";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -27,29 +33,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-import { formatCurrency } from '@/utils';
-import { useApi } from '@/hooks/useApi';
-import { useAuth } from '@/lib/auth';
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/utils";
+import { useApi } from "@/hooks/useApi";
+import { useAuth } from "@/lib/auth";
 import {
   getRevenueReport,
   getServicesReport,
   getAdvancedStaffMetrics,
   getStaffPerformanceMetrics,
-  useStaffApi
-} from '@/api/services/reportService';
-import { useToast } from '@/hooks/use-toast';
+  useStaffApi,
+} from "@/api/services/reportService";
+import { useToast } from "@/hooks/use-toast";
 
 // Date range presets
 const DATE_PRESETS = [
-  { value: 'today', label: 'Today' },
-  { value: 'yesterday', label: 'Yesterday' },
-  { value: 'last7days', label: 'Last 7 days' },
-  { value: 'last30days', label: 'Last 30 days' },
-  { value: 'thisMonth', label: 'This month' },
-  { value: 'lastMonth', label: 'Last month' },
-  { value: 'custom', label: 'Custom' },
+  { value: "today", label: "Today" },
+  { value: "yesterday", label: "Yesterday" },
+  { value: "last7days", label: "Last 7 days" },
+  { value: "last30days", label: "Last 30 days" },
+  { value: "thisMonth", label: "This month" },
+  { value: "lastMonth", label: "Last month" },
+  { value: "custom", label: "Custom" },
 ];
 
 // Combined service interface for display
@@ -80,7 +86,6 @@ export const StaffReports: React.FC = () => {
     execute: fetchRevenueReport,
   } = useApi(getRevenueReport);
 
- 
   const {
     data: servicesData,
     loading: servicesLoading,
@@ -101,10 +106,8 @@ export const StaffReports: React.FC = () => {
     error: staffError,
   } = useApi(useStaffApi);
 
-
-
   // State for date selection
-  const [dateRange, setDateRange] = useState<string>('last7days');
+  const [dateRange, setDateRange] = useState<string>("last7days");
   const [fromDate, setFromDate] = useState<Date>(subDays(new Date(), 7));
   const [toDate, setToDate] = useState<Date>(new Date());
 
@@ -113,16 +116,16 @@ export const StaffReports: React.FC = () => {
     if (!staffId) return;
 
     // Format dates for API calls
-    const dateFrom = format(fromDate, 'yyyy-MM-dd');
-    const dateTo = format(toDate, 'yyyy-MM-dd');
+    const dateFrom = format(fromDate, "yyyy-MM-dd");
+    const dateTo = format(toDate, "yyyy-MM-dd");
 
     // Fetch staff performance metrics from our new endpoint
     // The endpoint will extract staffId from JWT token if needed
     fetchStaffPerformanceMetrics(dateFrom, dateTo, user?.staff?.id || staffId);
 
     // Keep these calls for backward compatibility and additional data
-    fetchRevenueReport(dateFrom, dateTo, 'day');
-    fetchServicesReport(dateFrom, dateTo, 'revenue_desc');
+    fetchRevenueReport(dateFrom, dateTo, "day");
+    fetchServicesReport(dateFrom, dateTo, "revenue_desc");
     fetchAdvancedStaffMetrics(dateFrom, dateTo, staffId);
   }, [
     fromDate,
@@ -131,7 +134,7 @@ export const StaffReports: React.FC = () => {
     fetchStaffPerformanceMetrics,
     fetchRevenueReport,
     fetchServicesReport,
-    fetchAdvancedStaffMetrics
+    fetchAdvancedStaffMetrics,
   ]);
 
   // Load data on component mount
@@ -143,38 +146,36 @@ export const StaffReports: React.FC = () => {
 
   // Handle date range changes
   const handleDateRangeChange = (preset: string) => {
-
-
     const today = new Date();
 
     switch (preset) {
-      case 'today':
+      case "today":
         setFromDate(today);
         setToDate(today);
         break;
-      case 'yesterday': {
+      case "yesterday": {
         const yesterday = subDays(today, 1);
         setFromDate(yesterday);
         setToDate(yesterday);
         break;
       }
-      case 'last7days':
+      case "last7days":
         setFromDate(subDays(today, 7));
         setToDate(today);
         break;
-      case 'last30days':
+      case "last30days":
         setFromDate(subDays(today, 30));
         setToDate(today);
         break;
-      case 'thisMonth':
+      case "thisMonth":
         setFromDate(new Date(today.getFullYear(), today.getMonth(), 1));
         setToDate(today);
         break;
-      case 'lastMonth':
+      case "lastMonth":
         setFromDate(new Date(today.getFullYear(), today.getMonth() - 1, 1));
         setToDate(new Date(today.getFullYear(), today.getMonth(), 0));
         break;
-      case 'custom':
+      case "custom":
         // alert(1)
         // setFromDate(new Date(today.getFullYear(), today.getMonth() - 1, 1));
         // setToDate(new Date(today.getFullYear(), today.getMonth(), 0));
@@ -194,51 +195,56 @@ export const StaffReports: React.FC = () => {
 
   // Format date range for display
   const getDisplayDateRange = () => {
-    if (dateRange !== 'custom') {
-      return DATE_PRESETS.find(preset => preset.value === dateRange)?.label || '';
+    if (dateRange !== "custom") {
+      return (
+        DATE_PRESETS.find((preset) => preset.value === dateRange)?.label || ""
+      );
     }
-    return `${format(fromDate, 'MMM dd, yyyy')} - ${format(toDate, 'MMM dd, yyyy')}`;
+    return `${format(fromDate, "MMM dd, yyyy")} - ${format(
+      toDate,
+      "MMM dd, yyyy"
+    )}`;
   };
 
   // Handle errors
   useEffect(() => {
     if (revenueError) {
       toast({
-        title: 'Error loading revenue data',
+        title: "Error loading revenue data",
         description: revenueError.message,
-        variant: 'destructive'
+        variant: "destructive",
       });
     }
 
     if (staffError) {
       toast({
-        title: 'Error loading staff data',
+        title: "Error loading staff data",
         description: staffError.message,
-        variant: 'destructive'
+        variant: "destructive",
       });
     }
 
     if (servicesError) {
       toast({
-        title: 'Error loading services data',
+        title: "Error loading services data",
         description: servicesError.message,
-        variant: 'destructive'
+        variant: "destructive",
       });
     }
 
     if (advancedStaffError) {
       toast({
-        title: 'Error loading advanced staff metrics',
+        title: "Error loading advanced staff metrics",
         description: advancedStaffError.message,
-        variant: 'destructive'
+        variant: "destructive",
       });
     }
 
     if (staffPerformanceError) {
       toast({
-        title: 'Error loading staff performance metrics',
+        title: "Error loading staff performance metrics",
         description: staffPerformanceError.message,
-        variant: 'destructive'
+        variant: "destructive",
       });
     }
   }, [
@@ -247,54 +253,65 @@ export const StaffReports: React.FC = () => {
     servicesError,
     advancedStaffError,
     staffPerformanceError,
-    toast
+    toast,
   ]);
 
   // Get data for the UI
   // First try to get data from the new endpoint, fall back to other sources if needed
   const performanceData = staffPerformanceData?.data;
   //  console.log(staffPerformanceData,"performanceData.services >> 3")
-  const currentStaffData = staffData?.data?.find(staff => staff.staff_id === staffId);
-  const currentAdvancedStaffData = advancedStaffData?.data?.find(staff => staff.staff_id === staffId);
+  const currentStaffData = staffData?.data?.find(
+    (staff) => staff.staff_id === staffId
+  );
+  const currentAdvancedStaffData = advancedStaffData?.data?.find(
+    (staff) => staff.staff_id === staffId
+  );
 
   // Appointments count
-  const appointmentCount = performanceData?.appointments ??
-    (typeof currentStaffData?.appointments === 'number'
+  const appointmentCount =
+    performanceData?.appointments ??
+    (typeof currentStaffData?.appointments === "number"
       ? currentStaffData.appointments
-      : typeof currentStaffData?.appointments === 'string'
-        ? parseInt(currentStaffData.appointments, 10) || 0
-        : currentAdvancedStaffData?.appointments || 0);
+      : typeof currentStaffData?.appointments === "string"
+      ? parseInt(currentStaffData.appointments, 10) || 0
+      : currentAdvancedStaffData?.appointments || 0);
 
   // Revenue
-  const revenue = performanceData?.revenue ??
-    (typeof currentStaffData?.revenue === 'number'
+  const revenue =
+    performanceData?.revenue ??
+    (typeof currentStaffData?.revenue === "number"
       ? currentStaffData.revenue
-      : typeof currentStaffData?.revenue === 'string'
-        ? parseFloat(currentStaffData.revenue) || 0
-        : currentAdvancedStaffData?.revenue || 0);
+      : typeof currentStaffData?.revenue === "string"
+      ? parseFloat(currentStaffData.revenue) || 0
+      : currentAdvancedStaffData?.revenue || 0);
 
   // Commission
-  const commission = performanceData?.commission ??
-    (typeof currentStaffData?.commission === 'number'
+  const commission =
+    performanceData?.commission ??
+    (typeof currentStaffData?.commission === "number"
       ? currentStaffData.commission
-      : typeof currentStaffData?.commission === 'string'
-        ? parseFloat(currentStaffData.commission) || 0
-        : typeof currentStaffData?.commissionEarned === 'number'
-          ? currentStaffData.commissionEarned
-          : typeof currentStaffData?.commissionEarned === 'string'
-            ? parseFloat(currentStaffData.commissionEarned) || 0
-            : currentAdvancedStaffData?.commissionEarned || 0);
+      : typeof currentStaffData?.commission === "string"
+      ? parseFloat(currentStaffData.commission) || 0
+      : typeof currentStaffData?.commissionEarned === "number"
+      ? currentStaffData.commissionEarned
+      : typeof currentStaffData?.commissionEarned === "string"
+      ? parseFloat(currentStaffData.commissionEarned) || 0
+      : currentAdvancedStaffData?.commissionEarned || 0);
 
   // Commission percentage
-  const commissionPercentage = performanceData?.commissionPercentage ??
-    (typeof currentStaffData?.commissionPercentage === 'number'
+  const commissionPercentage =
+    performanceData?.commissionPercentage ??
+    (typeof currentStaffData?.commissionPercentage === "number"
       ? currentStaffData.commissionPercentage
-      : typeof currentStaffData?.commissionPercentage === 'string'
-        ? parseFloat(currentStaffData.commissionPercentage) || 0
-        : currentAdvancedStaffData?.commissionPercentage || 0);
+      : typeof currentStaffData?.commissionPercentage === "string"
+      ? parseFloat(currentStaffData.commissionPercentage) || 0
+      : currentAdvancedStaffData?.commissionPercentage || 0);
 
   // If still loading or no staff ID
-  if (!staffId || ((staffLoading || staffPerformanceLoading) && !performanceData)) {
+  if (
+    !staffId ||
+    ((staffLoading || staffPerformanceLoading) && !performanceData)
+  ) {
     return (
       <div className="flex justify-center items-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -303,35 +320,38 @@ export const StaffReports: React.FC = () => {
   }
 
   // Prepare services list for display
-  const displayServices: DisplayService[] = (() => {
-    console.log(performanceData?.services, "performanceData.services >> 1")
+  const displayServices = (() => {
     // First try to get from the new performance metrics endpoint
-    if (performanceData?.services && performanceData.services.length > 0) {
-      return performanceData.services.map(service => ({
+    if (servicesData?.data && servicesData.data.length > 0) {
+      return servicesData.data.map((service) => ({
         id: service.service_id,
         name: service.service_name,
         bookings: service.bookings,
         revenue: service.revenue,
-        tip: service.tip,
-        serviceCommission: service.serviceCommission
+        tip: service.tips,
+        serviceCommission: service.total_service_commision,
+        totalPayOut: service.total_payout,
       }));
     }
 
     // If we have advanced staff data with top services
-    if (currentAdvancedStaffData?.topServices && currentAdvancedStaffData.topServices.length > 0) {
-      return currentAdvancedStaffData.topServices.map(service => {
+    if (
+      currentAdvancedStaffData?.topServices &&
+      currentAdvancedStaffData.topServices.length > 0
+    ) {
+      return currentAdvancedStaffData.topServices.map((service) => {
         // Try to find revenue data for this service
         const serviceData = servicesData?.data?.find(
-          s => s.service_id === service.service_id
+          (s) => s.service_id === service.service_id
         );
 
-        const serviceRevenue = serviceData ? (
-          typeof serviceData.revenue === 'number'
+        const serviceRevenue = serviceData
+          ? typeof serviceData.revenue === "number"
             ? serviceData.revenue
-            : typeof serviceData.revenue === 'string'
-              ? parseFloat(serviceData.revenue) || 0
-              : 0
-        ) : 0;
+            : typeof serviceData.revenue === "string"
+            ? parseFloat(serviceData.revenue) || 0
+            : 0
+          : 0;
 
         return {
           id: service.service_id,
@@ -339,23 +359,25 @@ export const StaffReports: React.FC = () => {
           bookings: service.count,
           revenue: serviceRevenue,
           tip: service.tip,
-          discounts: service.discounts
+          discounts: service.discounts,
         };
       });
     }
 
     // Or use all services data if available
     if (servicesData?.data && servicesData.data.length > 0) {
-      return servicesData.data.map(service => {
-        const bookings = typeof service.bookings === 'number'
-          ? service.bookings
-          : typeof service.bookings === 'string'
+      return servicesData.data.map((service) => {
+        const bookings =
+          typeof service.bookings === "number"
+            ? service.bookings
+            : typeof service.bookings === "string"
             ? parseInt(service.bookings, 10) || 0
             : 0;
 
-        const serviceRevenue = typeof service.revenue === 'number'
-          ? service.revenue
-          : typeof service.revenue === 'string'
+        const serviceRevenue =
+          typeof service.revenue === "number"
+            ? service.revenue
+            : typeof service.revenue === "string"
             ? parseFloat(service.revenue) || 0
             : 0;
 
@@ -363,7 +385,7 @@ export const StaffReports: React.FC = () => {
           id: service.service_id,
           name: service.service_name,
           bookings: bookings,
-          revenue: serviceRevenue
+          revenue: serviceRevenue,
         };
       });
     }
@@ -385,8 +407,8 @@ export const StaffReports: React.FC = () => {
             <Button
               variant="outline"
               className={cn(
-                'justify-start text-left w-full md:w-auto',
-                !fromDate && 'text-muted-foreground'
+                "justify-start text-left w-full md:w-auto",
+                !fromDate && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
@@ -399,7 +421,7 @@ export const StaffReports: React.FC = () => {
                 {DATE_PRESETS.map((preset) => (
                   <Button
                     key={preset.value}
-                    variant={dateRange === preset.value ? 'default' : 'outline'}
+                    variant={dateRange === preset.value ? "default" : "outline"}
                     size="sm"
                     onClick={() => handleDateRangeChange(preset.value)}
                   >
@@ -417,7 +439,7 @@ export const StaffReports: React.FC = () => {
               onSelect={(range) => {
                 if (range?.from) {
                   setFromDate(range.from);
-                  setDateRange('custom');
+                  setDateRange("custom");
                 }
                 if (range?.to) {
                   setToDate(range.to);
@@ -434,7 +456,13 @@ export const StaffReports: React.FC = () => {
             size="sm"
             className="h-9"
             onClick={fetchInitialData}
-            disabled={staffLoading || revenueLoading || servicesLoading || advancedStaffLoading || staffPerformanceLoading}
+            disabled={
+              staffLoading ||
+              revenueLoading ||
+              servicesLoading ||
+              advancedStaffLoading ||
+              staffPerformanceLoading
+            }
           >
             <RefreshCcw className="mr-2 h-4 w-4" />
             Refresh
@@ -524,30 +552,37 @@ export const StaffReports: React.FC = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              {currentAdvancedStaffData ? "Utilization Rate" : "Average Per Appointment"}
+              {currentAdvancedStaffData
+                ? "Utilization Rate"
+                : "Average Per Appointment"}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               {currentAdvancedStaffData ? (
-                <div className="text-2xl font-bold">{currentAdvancedStaffData.utilization || 0}%</div>
+                <div className="text-2xl font-bold">
+                  {currentAdvancedStaffData.utilization || 0}%
+                </div>
               ) : (
                 <div className="text-2xl font-bold">
                   {formatCurrency(
-                    appointmentCount > 0
-                      ? revenue / appointmentCount
-                      : 0
+                    appointmentCount > 0 ? revenue / appointmentCount : 0
                   )}
                 </div>
               )}
               <Scissors className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="text-xs text-muted-foreground mt-1">
-              {currentAdvancedStaffData ? "Working hours utilization" : "Average revenue per appointment"}
+              {currentAdvancedStaffData
+                ? "Working hours utilization"
+                : "Average revenue per appointment"}
             </div>
             {currentAdvancedStaffData && (
               <div className="mt-4">
-                <Progress value={currentAdvancedStaffData.utilization || 0} className="h-1" />
+                <Progress
+                  value={currentAdvancedStaffData.utilization || 0}
+                  className="h-1"
+                />
               </div>
             )}
           </CardContent>
@@ -578,25 +613,47 @@ export const StaffReports: React.FC = () => {
                   <TableHead>Service</TableHead>
                   <TableHead className="text-right">Bookings</TableHead>
                   <TableHead className="text-right">Tips</TableHead>
-                  <TableHead className="text-right">Service Commission</TableHead>
+                  <TableHead className="text-right">
+                    Service Commission
+                  </TableHead>
                   <TableHead className="text-right">Revenue</TableHead>
                   <TableHead className="text-right">Avg. Price</TableHead>
+                  <TableHead className="text-right">Total Payout</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {displayServices.map((service) => {
                   // console.log(service, "service")
-                  console.log(service, "performanceData.services >> 2")
-                  return <TableRow key={service.id}>
-                    <TableCell className="font-medium">{service.name}</TableCell>
-                    <TableCell className="text-right">{service.bookings}</TableCell>
-                    <TableCell className="text-right">{service.tip}</TableCell>
-                    <TableCell className="text-right">{service.serviceCommission}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(service.revenue)}</TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(service.bookings > 0 ? service.revenue / service.bookings : 0)}
-                    </TableCell>
-                  </TableRow>
+                  console.log(service, "performanceData.services >> 2");
+                  return (
+                    <TableRow key={service.id}>
+                      <TableCell className="font-medium">
+                        {service.name}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {service.bookings}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        ${service.tip}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        ${service.serviceCommission}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(service.revenue)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(
+                          service.bookings > 0
+                            ? service.revenue / service.bookings
+                            : 0
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        ${service.totalPayOut}
+                      </TableCell>
+                    </TableRow>
+                  );
                 })}
               </TableBody>
             </Table>
@@ -620,21 +677,27 @@ export const StaffReports: React.FC = () => {
           <CardContent>
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="overflow-hidden rounded-lg bg-muted px-4 py-5 shadow sm:p-6">
-                <dt className="truncate text-sm font-medium text-muted-foreground">Average Service Time</dt>
+                <dt className="truncate text-sm font-medium text-muted-foreground">
+                  Average Service Time
+                </dt>
                 <dd className="mt-1 text-2xl font-semibold tracking-tight">
                   {currentAdvancedStaffData.averageServiceTime} minutes
                 </dd>
               </div>
               <div className="overflow-hidden rounded-lg bg-muted px-4 py-5 shadow sm:p-6">
-                <dt className="truncate text-sm font-medium text-muted-foreground">Rebook Rate</dt>
+                <dt className="truncate text-sm font-medium text-muted-foreground">
+                  Rebook Rate
+                </dt>
                 <dd className="mt-1 text-2xl font-semibold tracking-tight">
                   {currentAdvancedStaffData.rebookRate}%
                 </dd>
               </div>
               <div className="overflow-hidden rounded-lg bg-muted px-4 py-5 shadow sm:p-6">
-                <dt className="truncate text-sm font-medium text-muted-foreground">Busiest Days</dt>
+                <dt className="truncate text-sm font-medium text-muted-foreground">
+                  Busiest Days
+                </dt>
                 <dd className="mt-1 text-lg font-semibold tracking-tight">
-                  {currentAdvancedStaffData.busyDays.join(', ')}
+                  {currentAdvancedStaffData.busyDays.join(", ")}
                 </dd>
               </div>
             </dl>
@@ -645,4 +708,4 @@ export const StaffReports: React.FC = () => {
   );
 };
 
-export default StaffReports; 
+export default StaffReports;

@@ -189,7 +189,9 @@ export const Reports: React.FC = () => {
   const [fromDate, setFromDate] = useState<Date>(subDays(new Date(), 7));
   const [toDate, setToDate] = useState<Date>(new Date());
   // New state for temporary date values and calendar open state
-  const [tempFromDate, setTempFromDate] = useState<Date>(subDays(new Date(), 7));
+  const [tempFromDate, setTempFromDate] = useState<Date>(
+    subDays(new Date(), 7)
+  );
   const [tempToDate, setTempToDate] = useState<Date>(new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState("revenue");
@@ -207,26 +209,38 @@ export const Reports: React.FC = () => {
 
   // Dialog state
   const [selectedStaffMember, setSelectedStaffMember] = useState<string | null>(
-    null,
+    null
   );
   const [showStaffDialog, setShowStaffDialog] = useState(false);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [showServiceDialog, setShowServiceDialog] = useState(false);
   // Add new state for selected staff details
-  const [selectedStaffDetails, setSelectedStaffDetails] = useState<any | null>(null);
+  const [selectedStaffDetails, setSelectedStaffDetails] = useState<any | null>(
+    null
+  );
 
   // Fetch staff-specific tips & discounts when dialog opens or date changes
   useEffect(() => {
     if (showStaffDialog && selectedStaffMember) {
-      const dateFromStr = format(fromDate, 'yyyy-MM-dd');
-      const dateToStr = format(addDays(toDate, 1), 'yyyy-MM-dd');
+      const dateFromStr = format(fromDate, "yyyy-MM-dd");
+      const dateToStr = format(addDays(toDate, 1), "yyyy-MM-dd");
       // Pass groupBy explicitly to ensure staffId is the 4th argument
-      fetchStaffTipsDiscounts(dateFromStr, dateToStr, 'day', selectedStaffMember);
+      fetchStaffTipsDiscounts(
+        dateFromStr,
+        dateToStr,
+        "day",
+        selectedStaffMember
+      );
     }
-  }, [showStaffDialog, selectedStaffMember, fromDate, toDate, fetchStaffTipsDiscounts]);
+  }, [
+    showStaffDialog,
+    selectedStaffMember,
+    fromDate,
+    toDate,
+    fetchStaffTipsDiscounts,
+  ]);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-
 
   // Load data on component mount
   useEffect(() => {
@@ -260,7 +274,7 @@ export const Reports: React.FC = () => {
       { error: advancedRevenueError, source: "advanced revenue" },
       { error: advancedStaffError, source: "advanced staff" },
       { error: advancedServiceError, source: "advanced service" },
-      { error: staffTipsDiscountsError, source: "staff tips & discounts" }
+      { error: staffTipsDiscountsError, source: "staff tips & discounts" },
     ];
 
     errors.forEach(({ error, source }) => {
@@ -298,17 +312,22 @@ export const Reports: React.FC = () => {
 
   const fetchReportsData = () => {
     // Format dates for API calls
-    const dateFrom = format(fromDate, 'yyyy-MM-dd');
+    const dateFrom = format(fromDate, "yyyy-MM-dd");
     // Add 1 day to make the end-date inclusive (prevents timezone truncation issues)
-    const dateTo = format(addDays(toDate, 1), 'yyyy-MM-dd');
+    const dateTo = format(addDays(toDate, 1), "yyyy-MM-dd");
 
     // Define groupBy based on report type
-    const groupBy = reportType === 'yearly' ? 'month' : reportType === 'monthly' ? 'week' : 'day';
+    const groupBy =
+      reportType === "yearly"
+        ? "month"
+        : reportType === "monthly"
+        ? "week"
+        : "day";
 
     // Fetch all reports with the same date range
     fetchRevenueReport(dateFrom, dateTo, groupBy);
-    fetchServicesReport(dateFrom, dateTo, 'revenue_desc');
-    fetchStaffReport(dateFrom, dateTo, 'revenue_desc');
+    fetchServicesReport(dateFrom, dateTo, "revenue_desc");
+    fetchStaffReport(dateFrom, dateTo, "revenue_desc");
     fetchTipsDiscountsReport(dateFrom, dateTo, groupBy);
     fetchDayOfWeekReport(dateFrom, dateTo);
     fetchAdvancedRevenue(dateFrom, dateTo);
@@ -316,18 +335,27 @@ export const Reports: React.FC = () => {
   };
 
   // Handle date range changes
-  const handleDateRangeChange = (preset: "today" | "yesterday" | "last7days" | "last30days" | "thisMonth" | "lastMonth" | "custom") => {
+  const handleDateRangeChange = (
+    preset:
+      | "today"
+      | "yesterday"
+      | "last7days"
+      | "last30days"
+      | "thisMonth"
+      | "lastMonth"
+      | "custom"
+  ) => {
     setDateRange(preset);
     const today = new Date();
 
     switch (preset) {
-      case 'today':
+      case "today":
         setFromDate(today);
         setToDate(today);
         setTempFromDate(today);
         setTempToDate(today);
         break;
-      case 'yesterday': {
+      case "yesterday": {
         const yesterday = subDays(today, 1);
         setFromDate(yesterday);
         setToDate(yesterday);
@@ -335,25 +363,25 @@ export const Reports: React.FC = () => {
         setTempToDate(yesterday);
         break;
       }
-      case 'last7days':
+      case "last7days":
         setFromDate(subDays(today, 7));
         setToDate(today);
         setTempFromDate(subDays(today, 7));
         setTempToDate(today);
         break;
-      case 'last30days':
+      case "last30days":
         setFromDate(subDays(today, 30));
         setToDate(today);
         setTempFromDate(subDays(today, 30));
         setTempToDate(today);
         break;
-      case 'thisMonth':
+      case "thisMonth":
         setFromDate(new Date(today.getFullYear(), today.getMonth(), 1));
         setToDate(today);
         setTempFromDate(new Date(today.getFullYear(), today.getMonth(), 1));
         setTempToDate(today);
         break;
-      case 'lastMonth':
+      case "lastMonth":
         setFromDate(new Date(today.getFullYear(), today.getMonth() - 1, 1));
         setToDate(new Date(today.getFullYear(), today.getMonth(), 0));
         setTempFromDate(new Date(today.getFullYear(), today.getMonth() - 1, 1));
@@ -362,7 +390,7 @@ export const Reports: React.FC = () => {
     }
 
     // Close the popover for preset buttons
-    if (preset !== 'custom') {
+    if (preset !== "custom") {
       setIsCalendarOpen(false);
     }
     // Refresh data will happen via the useEffect
@@ -373,7 +401,7 @@ export const Reports: React.FC = () => {
     if (tempFromDate && tempToDate) {
       setFromDate(tempFromDate);
       setToDate(tempToDate);
-      setDateRange('custom');
+      setDateRange("custom");
       setIsCalendarOpen(false);
     }
   };
@@ -387,7 +415,11 @@ export const Reports: React.FC = () => {
 
   // Extract service categories from API data
   const serviceCategories = Array.from(
-    new Set(servicesList.filter(service => service.category).map((service) => service.category)),
+    new Set(
+      servicesList
+        .filter((service) => service.category)
+        .map((service) => service.category)
+    )
   );
 
   // Toggle selections
@@ -395,7 +427,7 @@ export const Reports: React.FC = () => {
     setSelectedStaff((prev) =>
       prev.includes(staffId)
         ? prev.filter((id) => id !== staffId)
-        : [...prev, staffId],
+        : [...prev, staffId]
     );
   };
 
@@ -403,7 +435,7 @@ export const Reports: React.FC = () => {
     setSelectedServices((prev) =>
       prev.includes(serviceId)
         ? prev.filter((id) => id !== serviceId)
-        : [...prev, serviceId],
+        : [...prev, serviceId]
     );
   };
 
@@ -411,7 +443,7 @@ export const Reports: React.FC = () => {
     setSelectedServiceCategories((prev) =>
       prev.includes(category)
         ? prev.filter((cat) => cat !== category)
-        : [...prev, category],
+        : [...prev, category]
     );
   };
 
@@ -419,7 +451,7 @@ export const Reports: React.FC = () => {
     setPaymentFilter((prev) =>
       prev.includes(method)
         ? prev.filter((m) => m !== method)
-        : [...prev, method],
+        : [...prev, method]
     );
   };
 
@@ -444,10 +476,15 @@ export const Reports: React.FC = () => {
 
   // Format date range for display
   const getDisplayDateRange = () => {
-    if (dateRange !== 'custom') {
-      return DATE_PRESETS.find(preset => preset.value === dateRange)?.label || '';
+    if (dateRange !== "custom") {
+      return (
+        DATE_PRESETS.find((preset) => preset.value === dateRange)?.label || ""
+      );
     }
-    return `${format(fromDate, 'MMM dd, yyyy')} - ${format(toDate, 'MMM dd, yyyy')}`;
+    return `${format(fromDate, "MMM dd, yyyy")} - ${format(
+      toDate,
+      "MMM dd, yyyy"
+    )}`;
   };
 
   // Get active filters count
@@ -465,34 +502,46 @@ export const Reports: React.FC = () => {
   // Payment method distribution data for pie chart
   const paymentMethodData = revenueData?.data?.paymentMethods
     ? revenueData.data.paymentMethods.map((method) => ({
-      name: method.payment_method,
-      value: parseFloat(String(method.amount)) || 0,
-      percentage: parseFloat(String(method.amount)) > 0
-        ? parseFloat(((parseFloat(String(method.amount)) / (revenueData.data.revenue?.reduce((sum, item) =>
-          sum + (parseFloat(String(item.total)) || 0), 0) || 1)) * 100).toFixed(1))
-        : 0,
-      color:
-        method.payment_method === "Cash"
-          ? "#000000"
-          : method.payment_method === "Card"
+        name: method.payment_method,
+        value: parseFloat(String(method.amount)) || 0,
+        percentage:
+          parseFloat(String(method.amount)) > 0
+            ? parseFloat(
+                (
+                  (parseFloat(String(method.amount)) /
+                    (revenueData.data.revenue?.reduce(
+                      (sum, item) =>
+                        sum + (parseFloat(String(item.total)) || 0),
+                      0
+                    ) || 1)) *
+                  100
+                ).toFixed(1)
+              )
+            : 0,
+        color:
+          method.payment_method === "Cash"
+            ? "#000000"
+            : method.payment_method === "Card"
             ? "#666666"
             : "#999999",
-    }))
+      }))
     : [];
 
   // Service category distribution data - use API data instead of mock data
   const serviceCategoryData = serviceCategories.map((category) => {
     // Get all services in this category
-    const servicesInCategory = servicesListData?.services?.filter(
-      (service) => service.category === category
-    ) || [];
+    const servicesInCategory =
+      servicesListData?.services?.filter(
+        (service) => service.category === category
+      ) || [];
 
-    const serviceIds = servicesInCategory.map(service => service.id);
+    const serviceIds = servicesInCategory.map((service) => service.id);
 
     // Find service performance records for these services
-    const categoryPerformanceData = servicesData?.data?.filter(
-      (service) => serviceIds.includes(service.service_id)
-    ) || [];
+    const categoryPerformanceData =
+      servicesData?.data?.filter((service) =>
+        serviceIds.includes(service.service_id)
+      ) || [];
 
     // Calculate total revenue for this category from actual service data
     const totalRevenue = categoryPerformanceData.reduce(
@@ -507,8 +556,8 @@ export const Reports: React.FC = () => {
         category === "haircut"
           ? "#000000"
           : category === "beard"
-            ? "#333333"
-            : "#666666",
+          ? "#333333"
+          : "#666666",
     };
   });
 
@@ -521,12 +570,14 @@ export const Reports: React.FC = () => {
     setShowStaffDialog(true);
 
     // Format dates for API calls
-    const dateFrom = format(fromDate, 'yyyy-MM-dd');
-    const dateTo = format(addDays(toDate, 1), 'yyyy-MM-dd');
+    const dateFrom = format(fromDate, "yyyy-MM-dd");
+    const dateTo = format(addDays(toDate, 1), "yyyy-MM-dd");
 
     // Find the staff in the existing data if possible
     if (advancedStaffData?.data) {
-      const existingStaff = advancedStaffData.data.find(staff => staff.staff_id === staffId);
+      const existingStaff = advancedStaffData.data.find(
+        (staff) => staff.staff_id === staffId
+      );
       if (existingStaff) {
         setSelectedStaffDetails(existingStaff);
         return;
@@ -536,11 +587,11 @@ export const Reports: React.FC = () => {
     // Make a separate API call to get staff details without affecting the main list
     try {
       const fetchSelectedStaffDetails = async () => {
-        const baseUrl = '/reports/advanced-staff';
+        const baseUrl = "/reports/advanced-staff";
         const params = new URLSearchParams({
           dateFrom,
           dateTo,
-          staffId
+          staffId,
         });
 
         const response = await fetch(`${baseUrl}?${params}`);
@@ -557,12 +608,12 @@ export const Reports: React.FC = () => {
       toast({
         title: "Error",
         description: "Failed to fetch staff details",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
 
     // Fetch tips & discounts specific to this staff member
-    fetchStaffTipsDiscounts(dateFrom, dateTo, 'day', staffId);
+    fetchStaffTipsDiscounts(dateFrom, dateTo, "day", staffId);
   };
 
   // Handle service selection
@@ -574,42 +625,53 @@ export const Reports: React.FC = () => {
     setShowServiceDialog(true);
 
     // Format dates for API calls
-    const dateFrom = format(fromDate, 'yyyy-MM-dd');
-    const dateTo = format(addDays(toDate, 1), 'yyyy-MM-dd');
+    const dateFrom = format(fromDate, "yyyy-MM-dd");
+    const dateTo = format(addDays(toDate, 1), "yyyy-MM-dd");
 
     // Fetch the data - dialog will show loading state while this happens
-    fetchAdvancedService(dateFrom, dateTo, serviceId)
-      .catch((error) => {
-        toast({
-          title: "Error",
-          description: "Failed to fetch service details",
-          variant: "destructive"
-        });
+    fetchAdvancedService(dateFrom, dateTo, serviceId).catch((error) => {
+      toast({
+        title: "Error",
+        description: "Failed to fetch service details",
+        variant: "destructive",
       });
+    });
   };
 
   // Update the render section to use API data instead of mocks
   // Example for rendering revenue data
   const renderRevenueChart = () => {
-    if (revenueLoading) return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    if (revenueLoading)
+      return (
+        <div className="flex justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
 
-    if (revenueError) return (
-      <div className="text-center p-8 text-destructive">
-        <p>Error loading revenue data. Please try again.</p>
-      </div>
-    );
+    if (revenueError)
+      return (
+        <div className="text-center p-8 text-destructive">
+          <p>Error loading revenue data. Please try again.</p>
+        </div>
+      );
 
-    if (!revenueData || !revenueData.data || !revenueData.data.revenue || revenueData.data.revenue.length === 0) return (
-      <div className="text-center p-8 text-muted-foreground">
-        <p>No revenue data available for the selected period.</p>
-      </div>
-    );
+    if (
+      !revenueData ||
+      !revenueData.data ||
+      !revenueData.data.revenue ||
+      revenueData.data.revenue.length === 0
+    )
+      return (
+        <div className="text-center p-8 text-muted-foreground">
+          <p>No revenue data available for the selected period.</p>
+        </div>
+      );
 
     // Format data for chart - transform to match ComparisonChart component's expected format
-    const chartData = revenueData.data.revenue.map(item => ({
+    const chartData = revenueData.data.revenue.map((item) => ({
       date: item.date,
       current: parseFloat(item.total as string) || 0,
-      previous: parseFloat(item.subtotal as string) || 0
+      previous: parseFloat(item.subtotal as string) || 0,
     }));
 
     return (
@@ -634,19 +696,26 @@ export const Reports: React.FC = () => {
 
   // Example for rendering services data
   const renderServicesTable = () => {
-    if (servicesLoading) return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    if (servicesLoading)
+      return (
+        <div className="flex justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
 
-    if (servicesError) return (
-      <div className="text-center p-8 text-destructive">
-        <p>Error loading services data. Please try again.</p>
-      </div>
-    );
+    if (servicesError)
+      return (
+        <div className="text-center p-8 text-destructive">
+          <p>Error loading services data. Please try again.</p>
+        </div>
+      );
 
-    if (!servicesData || !servicesData.data || servicesData.data.length === 0) return (
-      <div className="text-center p-8 text-muted-foreground">
-        <p>No services data available for the selected period.</p>
-      </div>
-    );
+    if (!servicesData || !servicesData.data || servicesData.data.length === 0)
+      return (
+        <div className="text-center p-8 text-muted-foreground">
+          <p>No services data available for the selected period.</p>
+        </div>
+      );
 
     return (
       <Table>
@@ -671,18 +740,31 @@ export const Reports: React.FC = () => {
             const avgPrice = bookings > 0 ? revenue / bookings : 0;
 
             return (
-              <TableRow key={service.service_id} onClick={() => handleServiceRowClick(service.service_id)}>
+              <TableRow
+                key={service.service_id}
+                onClick={() => handleServiceRowClick(service.service_id)}
+              >
                 <TableCell>{service.service_name}</TableCell>
                 <TableCell className="text-right">{bookings}</TableCell>
-                <TableCell className="text-right">${revenue.toFixed(2)}</TableCell>
+                <TableCell className="text-right">
+                  ${revenue.toFixed(2)}
+                </TableCell>
                 <TableCell className="text-right">${tips.toFixed(2)}</TableCell>
-                <TableCell className="text-right">${discounts.toFixed(2)}</TableCell>
-                <TableCell className="text-right">${avgPrice.toFixed(2)}</TableCell>
+                <TableCell className="text-right">
+                  ${discounts.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-right">
+                  ${avgPrice.toFixed(2)}
+                </TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="icon" onClick={(e) => {
-                    e.stopPropagation();
-                    handleServiceRowClick(service.service_id);
-                  }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleServiceRowClick(service.service_id);
+                    }}
+                  >
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -707,42 +789,80 @@ export const Reports: React.FC = () => {
               <TableHead className="text-right">Revenue</TableHead>
               <TableHead className="text-right">Tips</TableHead>
               <TableHead className="text-right">Discounts</TableHead>
-              <TableHead className="text-right">Total payout</TableHead>
+
               <TableHead className="text-right">Service</TableHead>
               <TableHead className="text-right">Srv Comm.</TableHead>
               <TableHead className="text-right">Product</TableHead>
               <TableHead className="text-right">Prod Comm.</TableHead>
               <TableHead className="text-right">Total Comm.</TableHead>
+              <TableHead className="text-right">Total payout</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {advancedStaffData.data.map((staff: any) => {
               const revenue = parseFloat(String(staff.revenue)) || 0;
-              const tips = parseFloat(String(staff.tips ?? 0)) || 0;
+              const tips = parseFloat(String(staff.tipFromCustomer ?? 0)) || 0;
               const discounts = parseFloat(String(staff.discounts ?? 0)) || 0;
-              const commissionServices = parseFloat(String(staff.commissionFromServices ?? 0));
-              const commissionProducts = parseFloat(String(staff.commissionFromProducts ?? 0));
-              const commission = parseFloat(String(staff.commissionEarned)) || (commissionServices + commissionProducts);
+              const commissionServices = parseFloat(
+                String(staff.commissionFromServices ?? 0)
+              );
+              const commissionProducts = parseFloat(
+                String(staff.commissionFromProducts ?? 0)
+              );
+              const commission =
+                parseFloat(String(staff.commissionEarned)) ||
+                commissionServices + commissionProducts;
+              const Services = parseFloat(String(staff.services?.length)) || 0;
+              const Products = parseFloat(String(staff.products?.length)) || 0;
+              const TotalPayOuts = parseFloat(String(staff?.totalPayout)) || 0;
 
               return (
-                <TableRow key={staff.staff_id} onClick={() => handleStaffRowClick(staff.staff_id)}>
+                <TableRow
+                  key={staff.staff_id}
+                  onClick={() => handleStaffRowClick(staff.staff_id)}
+                >
                   <TableCell>{staff.name}</TableCell>
-                  <TableCell className="text-right">{staff.appointments}</TableCell>
-                  <TableCell className="text-right">${revenue.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">${tips.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">${discounts.toFixed(2)}</TableCell>
-                  <TableCell className="text-right"> - </TableCell>
-                  <TableCell className="text-right"> - </TableCell>
-                  <TableCell className="text-right">${commissionServices.toFixed(2)}</TableCell>
-                  <TableCell className="text-right"> - </TableCell>
-                  <TableCell className="text-right">${commissionProducts.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">${commission.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">
+                    {staff.appointments}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${revenue.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${tips.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${discounts.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {" "}
+                    {Services}{" "}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${commissionServices.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {Products}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${commissionProducts.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${commission.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${TotalPayOuts?.toFixed(2)}{" "}
+                  </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" onClick={(e) => {
-                      e.stopPropagation();
-                      handleStaffRowClick(staff.staff_id);
-                    }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStaffRowClick(staff.staff_id);
+                      }}
+                    >
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </TableCell>
@@ -756,7 +876,11 @@ export const Reports: React.FC = () => {
 
     // Fallback to basic staff data if advanced data isn't available
     if (staffLoading || advancedStaffLoading) {
-      return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+      return (
+        <div className="flex justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
     }
 
     if (staffError || advancedStaffError) {
@@ -767,8 +891,12 @@ export const Reports: React.FC = () => {
       );
     }
 
-    if ((!staffData || !staffData.data || staffData.data.length === 0) &&
-      (!advancedStaffData || !advancedStaffData.data || advancedStaffData.data.length === 0)) {
+    if (
+      (!staffData || !staffData.data || staffData.data.length === 0) &&
+      (!advancedStaffData ||
+        !advancedStaffData.data ||
+        advancedStaffData.data.length === 0)
+    ) {
       return (
         <div className="text-center p-8 text-muted-foreground">
           <p>No staff performance data available for the selected period.</p>
@@ -800,18 +928,31 @@ export const Reports: React.FC = () => {
             const appointments = parseInt(String(staff.appointments)) || 0;
 
             return (
-              <TableRow key={staff.staff_id} onClick={() => handleStaffRowClick(staff.staff_id)}>
+              <TableRow
+                key={staff.staff_id}
+                onClick={() => handleStaffRowClick(staff.staff_id)}
+              >
                 <TableCell>{staff.staff_name || staff.name}</TableCell>
                 <TableCell className="text-right">{appointments}</TableCell>
-                <TableCell className="text-right">${revenue.toFixed(2)}</TableCell>
+                <TableCell className="text-right">
+                  ${revenue.toFixed(2)}
+                </TableCell>
                 <TableCell className="text-right">${tips.toFixed(2)}</TableCell>
-                <TableCell className="text-right">${discounts.toFixed(2)}</TableCell>
-                <TableCell className="text-right">${commission.toFixed(2)}</TableCell>
+                <TableCell className="text-right">
+                  ${discounts.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-right">
+                  ${commission.toFixed(2)}
+                </TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="icon" onClick={(e) => {
-                    e.stopPropagation();
-                    handleStaffRowClick(staff.staff_id);
-                  }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStaffRowClick(staff.staff_id);
+                    }}
+                  >
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -825,25 +966,32 @@ export const Reports: React.FC = () => {
 
   // Example for rendering tips/discounts data
   const renderTipsDiscountsChart = () => {
-    if (tipsDiscountsLoading) return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    if (tipsDiscountsLoading)
+      return (
+        <div className="flex justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
 
-    if (tipsDiscountsError) return (
-      <div className="text-center p-8 text-destructive">
-        <p>Error loading tips and discounts data. Please try again.</p>
-      </div>
-    );
+    if (tipsDiscountsError)
+      return (
+        <div className="text-center p-8 text-destructive">
+          <p>Error loading tips and discounts data. Please try again.</p>
+        </div>
+      );
 
-    if (!tipsDiscountsData || !tipsDiscountsData.data) return (
-      <div className="text-center p-8 text-muted-foreground">
-        <p>No tips and discounts data available for the selected period.</p>
-      </div>
-    );
+    if (!tipsDiscountsData || !tipsDiscountsData.data)
+      return (
+        <div className="text-center p-8 text-muted-foreground">
+          <p>No tips and discounts data available for the selected period.</p>
+        </div>
+      );
 
     // Format data for chart to match ComparisonChart component's expected format
-    const chartData = tipsDiscountsData.data.timeSeriesData.map(item => ({
+    const chartData = tipsDiscountsData.data.timeSeriesData.map((item) => ({
       date: item.date,
       current: parseFloat(item.tips as string) || 0,
-      previous: parseFloat(item.discounts as string) || 0
+      previous: parseFloat(item.discounts as string) || 0,
     }));
 
     return (
@@ -892,8 +1040,8 @@ export const Reports: React.FC = () => {
             <Button
               variant="outline"
               className={cn(
-                'justify-start text-left',
-                !fromDate && 'text-muted-foreground'
+                "justify-start text-left",
+                !fromDate && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
@@ -917,9 +1065,20 @@ export const Reports: React.FC = () => {
                 {DATE_PRESETS.map((preset) => (
                   <Button
                     key={preset.value}
-                    variant={dateRange === preset.value ? 'default' : 'outline'}
+                    variant={dateRange === preset.value ? "default" : "outline"}
                     size="sm"
-                    onClick={() => handleDateRangeChange(preset.value as "today" | "yesterday" | "last7days" | "last30days" | "thisMonth" | "lastMonth" | "custom")}
+                    onClick={() =>
+                      handleDateRangeChange(
+                        preset.value as
+                          | "today"
+                          | "yesterday"
+                          | "last7days"
+                          | "last30days"
+                          | "thisMonth"
+                          | "lastMonth"
+                          | "custom"
+                      )
+                    }
                   >
                     {preset.label}
                   </Button>
@@ -943,16 +1102,13 @@ export const Reports: React.FC = () => {
               initialFocus
             />
             <div className="p-3 border-t flex justify-end">
-              <Button onClick={applyDateRange}>
-                Apply
-              </Button>
+              <Button onClick={applyDateRange}>Apply</Button>
             </div>
           </PopoverContent>
         </Popover>
       </div>
 
       <div className="flex-1 space-y-4 pt-6">
-
         <div className="space-y-4">
           <Tabs
             defaultValue="revenue"
@@ -997,16 +1153,24 @@ export const Reports: React.FC = () => {
                         <span className="text-sm">Loading...</span>
                       </div>
                     ) : advancedRevenueError ? (
-                      <div className="text-sm text-destructive">Error loading data</div>
+                      <div className="text-sm text-destructive">
+                        Error loading data
+                      </div>
                     ) : (
                       <>
                         <div className="text-2xl font-bold">
-                          ${advancedRevenueData?.data?.current?.monthly?.total?.toLocaleString() || '0'}
+                          $
+                          {advancedRevenueData?.data?.current?.monthly?.total?.toLocaleString() ||
+                            "0"}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {(advancedRevenueData?.data?.current?.monthly?.percentChange || 0) > 0 ? '+' : ''}
-                          {advancedRevenueData?.data?.current?.monthly?.percentChange || 0}%
-                          from last month
+                          {(advancedRevenueData?.data?.current?.monthly
+                            ?.percentChange || 0) > 0
+                            ? "+"
+                            : ""}
+                          {advancedRevenueData?.data?.current?.monthly
+                            ?.percentChange || 0}
+                          % from last month
                         </p>
                       </>
                     )}
@@ -1027,25 +1191,29 @@ export const Reports: React.FC = () => {
                         <span className="text-sm">Loading...</span>
                       </div>
                     ) : advancedRevenueError ? (
-                      <div className="text-sm text-destructive">Error loading data</div>
+                      <div className="text-sm text-destructive">
+                        Error loading data
+                      </div>
                     ) : (
                       <>
                         <div className="text-2xl font-bold">
-                          ${advancedRevenueData?.data?.current?.daily?.average?.toLocaleString() || '0'}
+                          $
+                          {advancedRevenueData?.data?.current?.daily?.average?.toLocaleString() ||
+                            "0"}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {(advancedRevenueData?.data?.current?.daily?.percentChange || 0) > 0 ? '+' : ''}
-                          {advancedRevenueData?.data?.current?.daily?.percentChange || 0}%
-                          from last week
+                          {(advancedRevenueData?.data?.current?.daily
+                            ?.percentChange || 0) > 0
+                            ? "+"
+                            : ""}
+                          {advancedRevenueData?.data?.current?.daily
+                            ?.percentChange || 0}
+                          % from last week
                         </p>
                       </>
                     )}
                   </CardContent>
                 </Card>
-
-                
-
-
 
                 {/* <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -1089,11 +1257,16 @@ export const Reports: React.FC = () => {
                         <span className="text-sm">Loading...</span>
                       </div>
                     ) : advancedRevenueError ? (
-                      <div className="text-sm text-destructive">Error loading data</div>
+                      <div className="text-sm text-destructive">
+                        Error loading data
+                      </div>
                     ) : (
                       <>
                         <div className="text-2xl font-bold">
-                          ${advancedRevenueData?.data?.current?.revenuePerVisit?.toFixed(2) || '0.00'}
+                          $
+                          {advancedRevenueData?.data?.current?.revenuePerVisit?.toFixed(
+                            2
+                          ) || "0.00"}
                         </div>
                         <p className="text-xs text-muted-foreground">
                           Average transaction value
@@ -1117,11 +1290,16 @@ export const Reports: React.FC = () => {
                         <span className="text-sm">Loading...</span>
                       </div>
                     ) : advancedRevenueError ? (
-                      <div className="text-sm text-destructive">Error loading data</div>
+                      <div className="text-sm text-destructive">
+                        Error loading data
+                      </div>
                     ) : (
                       <>
                         <div className="text-2xl font-bold">
-                          ${advancedRevenueData?.data?.current?.monthly?.totaltTip?.toFixed(2) || '0.00'}
+                          $
+                          {advancedRevenueData?.data?.current?.monthly?.totaltTip?.toFixed(
+                            2
+                          ) || "0.00"}
                         </div>
                         <p className="text-xs text-muted-foreground">
                           Average transaction value
@@ -1134,7 +1312,7 @@ export const Reports: React.FC = () => {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Total Commission 
+                      Total Commission
                     </CardTitle>
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
@@ -1145,11 +1323,16 @@ export const Reports: React.FC = () => {
                         <span className="text-sm">Loading...</span>
                       </div>
                     ) : advancedRevenueError ? (
-                      <div className="text-sm text-destructive">Error loading data</div>
+                      <div className="text-sm text-destructive">
+                        Error loading data
+                      </div>
                     ) : (
                       <>
                         <div className="text-2xl font-bold">
-                          ${advancedRevenueData?.data?.current?.monthly?.totaltCommision?.toFixed(2) || '0.00'}
+                          $
+                          {advancedRevenueData?.data?.current?.monthly?.totaltCommision?.toFixed(
+                            2
+                          ) || "0.00"}
                         </div>
                         <p className="text-xs text-muted-foreground">
                           Average transaction value
@@ -1162,7 +1345,7 @@ export const Reports: React.FC = () => {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Total Service 
+                      Total Service 1
                     </CardTitle>
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
@@ -1173,11 +1356,16 @@ export const Reports: React.FC = () => {
                         <span className="text-sm">Loading...</span>
                       </div>
                     ) : advancedRevenueError ? (
-                      <div className="text-sm text-destructive">Error loading data</div>
+                      <div className="text-sm text-destructive">
+                        Error loading data
+                      </div>
                     ) : (
                       <>
                         <div className="text-2xl font-bold">
-                          ${advancedRevenueData?.data?.current?.monthly?.totalServices?.toFixed(2) || '0.00'}
+                          $
+                          {advancedRevenueData?.data?.current?.monthly?.totalServices?.toFixed(
+                            2
+                          ) || "0.00"}
                         </div>
                         <p className="text-xs text-muted-foreground">
                           Average transaction value
@@ -1190,7 +1378,7 @@ export const Reports: React.FC = () => {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Total Product 
+                      Total Product
                     </CardTitle>
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
@@ -1201,11 +1389,16 @@ export const Reports: React.FC = () => {
                         <span className="text-sm">Loading...</span>
                       </div>
                     ) : advancedRevenueError ? (
-                      <div className="text-sm text-destructive">Error loading data</div>
+                      <div className="text-sm text-destructive">
+                        Error loading data
+                      </div>
                     ) : (
                       <>
                         <div className="text-2xl font-bold">
-                          ${advancedRevenueData?.data?.current?.monthly?.totalProduct?.toFixed(2) || '0.00'}
+                          $
+                          {advancedRevenueData?.data?.current?.monthly?.totalProduct?.toFixed(
+                            2
+                          ) || "0.00"}
                         </div>
                         <p className="text-xs text-muted-foreground">
                           Average transaction value
@@ -1214,7 +1407,6 @@ export const Reports: React.FC = () => {
                     )}
                   </CardContent>
                 </Card>
-
               </div>
 
               <Tabs defaultValue="trends" className="w-full mt-6">
@@ -1233,7 +1425,11 @@ export const Reports: React.FC = () => {
                           <CardDescription>
                             {getDisplayDateRange()}
                             {compareWith !== "none" &&
-                              ` vs ${COMPARISON_OPTIONS.find((c) => c.value === compareWith)?.label}`}
+                              ` vs ${
+                                COMPARISON_OPTIONS.find(
+                                  (c) => c.value === compareWith
+                                )?.label
+                              }`}
                           </CardDescription>
                         </div>
                       </div>
@@ -1264,35 +1460,53 @@ export const Reports: React.FC = () => {
                         <TableBody>
                           {dayOfWeekLoading ? (
                             <TableRow>
-                              <TableCell colSpan={5} className="text-center py-4">
+                              <TableCell
+                                colSpan={5}
+                                className="text-center py-4"
+                              >
                                 <Loader2 className="h-6 w-6 animate-spin inline-block mr-2" />
                                 Loading data...
                               </TableCell>
                             </TableRow>
                           ) : dayOfWeekError ? (
                             <TableRow>
-                              <TableCell colSpan={5} className="text-center text-destructive py-4">
+                              <TableCell
+                                colSpan={5}
+                                className="text-center text-destructive py-4"
+                              >
                                 Error loading data. Please try again.
                               </TableCell>
                             </TableRow>
-                          ) : !dayOfWeekData || !dayOfWeekData.data || dayOfWeekData.data.length === 0 ? (
+                          ) : !dayOfWeekData ||
+                            !dayOfWeekData.data ||
+                            dayOfWeekData.data.length === 0 ? (
                             <TableRow>
-                              <TableCell colSpan={5} className="text-center text-muted-foreground py-4">
-                                No revenue data available for the selected period.
+                              <TableCell
+                                colSpan={5}
+                                className="text-center text-muted-foreground py-4"
+                              >
+                                No revenue data available for the selected
+                                period.
                               </TableCell>
                             </TableRow>
                           ) : (
                             dayOfWeekData.data.map((dayData) => {
-                              const revenue = parseFloat(String(dayData.revenue)) || 0;
-                              const transactions = parseInt(String(dayData.transactions)) || 0;
-                              const avgTransaction = parseFloat(String(dayData.avg_transaction)) || 0;
+                              const revenue =
+                                parseFloat(String(dayData.revenue)) || 0;
+                              const transactions =
+                                parseInt(String(dayData.transactions)) || 0;
+                              const avgTransaction =
+                                parseFloat(String(dayData.avg_transaction)) ||
+                                0;
 
                               return (
                                 <TableRow key={dayData.day_of_week}>
                                   <TableCell className="font-medium">
                                     {dayData.day_name}
                                   </TableCell>
-                                  <TableCell>${revenue.toLocaleString()}</TableCell>
+                                  <TableCell>
+                                    ${revenue.toLocaleString()}
+                                  </TableCell>
                                   <TableCell>{transactions}</TableCell>
                                   <TableCell>
                                     ${avgTransaction.toFixed(2)}
@@ -1362,35 +1576,56 @@ export const Reports: React.FC = () => {
                           <TableBody>
                             {revenueLoading ? (
                               <TableRow>
-                                <TableCell colSpan={5} className="text-center py-4">
+                                <TableCell
+                                  colSpan={5}
+                                  className="text-center py-4"
+                                >
                                   <Loader2 className="h-6 w-6 animate-spin inline-block mr-2" />
                                   Loading data...
                                 </TableCell>
                               </TableRow>
                             ) : revenueError ? (
                               <TableRow>
-                                <TableCell colSpan={5} className="text-center text-destructive py-4">
-                                  Error loading payment methods data. Please try again.
+                                <TableCell
+                                  colSpan={5}
+                                  className="text-center text-destructive py-4"
+                                >
+                                  Error loading payment methods data. Please try
+                                  again.
                                 </TableCell>
                               </TableRow>
-                            ) : !revenueData || !revenueData.data || !revenueData.data.paymentMethods || revenueData.data.paymentMethods.length === 0 ? (
+                            ) : !revenueData ||
+                              !revenueData.data ||
+                              !revenueData.data.paymentMethods ||
+                              revenueData.data.paymentMethods.length === 0 ? (
                               <TableRow>
-                                <TableCell colSpan={5} className="text-center text-muted-foreground py-4">
-                                  No payment methods data available for the selected period.
+                                <TableCell
+                                  colSpan={5}
+                                  className="text-center text-muted-foreground py-4"
+                                >
+                                  No payment methods data available for the
+                                  selected period.
                                 </TableCell>
                               </TableRow>
                             ) : (
                               revenueData.data.paymentMethods.map((method) => {
-                                const amount = parseFloat(String(method.amount)) || 0;
-                                const count = parseInt(String(method.count)) || 0;
+                                const amount =
+                                  parseFloat(String(method.amount)) || 0;
+                                const count =
+                                  parseInt(String(method.count)) || 0;
 
                                 // Calculate totalRevenue from the sum of all payment methods
-                                const totalRevenue = revenueData.data.paymentMethods.reduce(
-                                  (sum, method) => sum + (parseFloat(String(method.amount)) || 0),
-                                  0
-                                );
+                                const totalRevenue =
+                                  revenueData.data.paymentMethods.reduce(
+                                    (sum, method) =>
+                                      sum +
+                                      (parseFloat(String(method.amount)) || 0),
+                                    0
+                                  );
 
-                                const percentage = totalRevenue ? ((amount / totalRevenue) * 100).toFixed(1) : "0";
+                                const percentage = totalRevenue
+                                  ? ((amount / totalRevenue) * 100).toFixed(1)
+                                  : "0";
                                 // Assuming we don't have trend data from API, we can calculate based on count
                                 const trend = count > 5 ? "up" : "down";
                                 const changePercent = "10.5"; // Placeholder as API doesn't provide this
@@ -1481,45 +1716,66 @@ export const Reports: React.FC = () => {
                           <TableBody>
                             {servicesLoading || servicesListLoading ? (
                               <TableRow>
-                                <TableCell colSpan={5} className="text-center py-4">
+                                <TableCell
+                                  colSpan={5}
+                                  className="text-center py-4"
+                                >
                                   <Loader2 className="h-6 w-6 animate-spin inline-block mr-2" />
                                   Loading data...
                                 </TableCell>
                               </TableRow>
                             ) : servicesError || servicesListError ? (
                               <TableRow>
-                                <TableCell colSpan={5} className="text-center text-destructive py-4">
+                                <TableCell
+                                  colSpan={5}
+                                  className="text-center text-destructive py-4"
+                                >
                                   Error loading category data. Please try again.
                                 </TableCell>
                               </TableRow>
-                            ) : !serviceCategories || serviceCategories.length === 0 ? (
+                            ) : !serviceCategories ||
+                              serviceCategories.length === 0 ? (
                               <TableRow>
-                                <TableCell colSpan={5} className="text-center text-muted-foreground py-4">
+                                <TableCell
+                                  colSpan={5}
+                                  className="text-center text-muted-foreground py-4"
+                                >
                                   No service categories available.
                                 </TableCell>
                               </TableRow>
                             ) : (
                               serviceCategories.map((category) => {
                                 // Get all services in this category
-                                const servicesInCategory = servicesListData?.services?.filter(
-                                  (service) => service.category === category
-                                ) || [];
+                                const servicesInCategory =
+                                  servicesListData?.services?.filter(
+                                    (service) => service.category === category
+                                  ) || [];
 
-                                const serviceIds = servicesInCategory.map(service => service.id);
-
-                                // Find service performance records for these services
-                                const categoryPerformanceData = servicesData?.data?.filter(
-                                  (service) => serviceIds.includes(service.service_id)
-                                ) || [];
-
-                                // Calculate total revenue for this category from actual service data
-                                const totalRevenue = categoryPerformanceData.reduce(
-                                  (sum, service) => sum + (parseFloat(String(service.revenue)) || 0),
-                                  0
+                                const serviceIds = servicesInCategory.map(
+                                  (service) => service.id
                                 );
 
+                                // Find service performance records for these services
+                                const categoryPerformanceData =
+                                  servicesData?.data?.filter((service) =>
+                                    serviceIds.includes(service.service_id)
+                                  ) || [];
+
+                                // Calculate total revenue for this category from actual service data
+                                const totalRevenue =
+                                  categoryPerformanceData.reduce(
+                                    (sum, service) =>
+                                      sum +
+                                      (parseFloat(String(service.revenue)) ||
+                                        0),
+                                    0
+                                  );
+
                                 const totalServices = servicesInCategory.length;
-                                const avgPrice = totalServices > 0 ? totalRevenue / totalServices : 0;
+                                const avgPrice =
+                                  totalServices > 0
+                                    ? totalRevenue / totalServices
+                                    : 0;
                                 const growth = 5; // Placeholder since API doesn't provide growth data
 
                                 return (
@@ -1530,10 +1786,10 @@ export const Reports: React.FC = () => {
                                     <TableCell>
                                       ${totalRevenue.toLocaleString()}
                                     </TableCell>
+                                    <TableCell>{totalServices}</TableCell>
                                     <TableCell>
-                                      {totalServices}
+                                      ${avgPrice.toFixed(2)}
                                     </TableCell>
-                                    <TableCell>${avgPrice.toFixed(2)}</TableCell>
                                     <TableCell>
                                       <span
                                         className={
@@ -1571,7 +1827,9 @@ export const Reports: React.FC = () => {
                     <Scissors className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{servicesListData?.services?.length || 0}</div>
+                    <div className="text-2xl font-bold">
+                      {servicesListData?.services?.length || 0}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       Available services
                     </p>
@@ -1588,13 +1846,16 @@ export const Reports: React.FC = () => {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       $
-                      {servicesListData?.services && servicesListData.services.length > 0 ?
-                        (servicesListData.services.reduce(
-                          (sum, service) => sum + (parseFloat(String(service.price)) || 0),
-                          0
-                        ) / servicesListData.services.length).toFixed(2)
-                        : "0.00"
-                      }
+                      {servicesListData?.services &&
+                      servicesListData.services.length > 0
+                        ? (
+                            servicesListData.services.reduce(
+                              (sum, service) =>
+                                sum + (parseFloat(String(service.price)) || 0),
+                              0
+                            ) / servicesListData.services.length
+                          ).toFixed(2)
+                        : "0.00"}
                     </div>
                     <p className="text-xs text-muted-foreground">Per service</p>
                   </CardContent>
@@ -1610,17 +1871,19 @@ export const Reports: React.FC = () => {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {servicesData?.data && servicesData.data.length > 0
-                        ? servicesData.data.sort((a, b) =>
-                          (parseInt(String(b.bookings)) || 0) - (parseInt(String(a.bookings)) || 0)
-                        )[0]?.service_name || "No data"
-                        : "No data"
-                      }
+                        ? servicesData.data.sort(
+                            (a, b) =>
+                              (parseInt(String(b.bookings)) || 0) -
+                              (parseInt(String(a.bookings)) || 0)
+                          )[0]?.service_name || "No data"
+                        : "No data"}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {servicesData?.data && servicesData.data.length > 0
-                        ? `${parseInt(String(servicesData.data[0].bookings)) || 0} bookings this period`
-                        : "No bookings data"
-                      }
+                        ? `${
+                            parseInt(String(servicesData.data[0].bookings)) || 0
+                          } bookings this period`
+                        : "No bookings data"}
                     </p>
                   </CardContent>
                 </Card>
@@ -1649,15 +1912,11 @@ export const Reports: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>Service Performance</CardTitle>
-                      <CardDescription>
-                        {getDisplayDateRange()}
-                      </CardDescription>
+                      <CardDescription>{getDisplayDateRange()}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  {renderServicesTable()}
-                </CardContent>
+                <CardContent>{renderServicesTable()}</CardContent>
               </Card>
 
               {/* Service Detail Dialog */}
@@ -1684,10 +1943,17 @@ export const Reports: React.FC = () => {
                         variant="outline"
                         className="mt-4"
                         onClick={() => {
-                          const dateFrom = format(fromDate, 'yyyy-MM-dd');
-                          const dateTo = format(addDays(toDate, 1), 'yyyy-MM-dd');
+                          const dateFrom = format(fromDate, "yyyy-MM-dd");
+                          const dateTo = format(
+                            addDays(toDate, 1),
+                            "yyyy-MM-dd"
+                          );
                           if (selectedService) {
-                            fetchAdvancedService(dateFrom, dateTo, selectedService);
+                            fetchAdvancedService(
+                              dateFrom,
+                              dateTo,
+                              selectedService
+                            );
                           }
                         }}
                       >
@@ -1699,10 +1965,13 @@ export const Reports: React.FC = () => {
                       {advancedServiceData.data
                         .filter((service, index) => {
                           const serviceInfo = servicesData?.data?.find(
-                            (s) => s.service_id === selectedService,
+                            (s) => s.service_id === selectedService
                           );
                           // Only match one record, either by name or by index
-                          if (serviceInfo && serviceInfo.service_name === service.name)
+                          if (
+                            serviceInfo &&
+                            serviceInfo.service_name === service.name
+                          )
                             return true;
                           if (
                             !serviceInfo &&
@@ -1714,7 +1983,7 @@ export const Reports: React.FC = () => {
                         .slice(0, 1) // Ensure only one record is displayed
                         .map((service, index) => {
                           const serviceInfo: any = servicesData?.data?.find(
-                            (s) => s.service_name === service.name,
+                            (s) => s.service_name === service.name
                           );
                           return (
                             <div key={index} className="space-y-6">
@@ -1724,17 +1993,28 @@ export const Reports: React.FC = () => {
                                     {service.name}
                                   </h2>
                                   <p className="text-muted-foreground">
-                                    {serviceInfo?.category || service.category || "General"} • {service.duration || service.avgDuration || "N/A"} minutes
+                                    {serviceInfo?.category ||
+                                      service.category ||
+                                      "General"}{" "}
+                                    •{" "}
+                                    {service.duration ||
+                                      service.avgDuration ||
+                                      "N/A"}{" "}
+                                    minutes
                                   </p>
                                 </div>
                                 <Badge
                                   variant={
-                                    service.growthRate && parseFloat(service.growthRate) > 0
+                                    service.growthRate &&
+                                    parseFloat(service.growthRate) > 0
                                       ? "default"
                                       : "secondary"
                                   }
                                 >
-                                  {service.growthRate && parseFloat(service.growthRate) > 0 ? "+" : ""}
+                                  {service.growthRate &&
+                                  parseFloat(service.growthRate) > 0
+                                    ? "+"
+                                    : ""}
                                   {service.growthRate || "0"}% growth
                                 </Badge>
                               </div>
@@ -1787,7 +2067,11 @@ export const Reports: React.FC = () => {
                                   </CardHeader>
                                   <CardContent className="p-3 pt-0">
                                     <p className="text-2xl font-bold">
-                                      ${typeof service.averageRevenue === 'number' ? service.averageRevenue.toFixed(2) : '0.00'}
+                                      $
+                                      {typeof service.averageRevenue ===
+                                      "number"
+                                        ? service.averageRevenue.toFixed(2)
+                                        : "0.00"}
                                     </p>
                                   </CardContent>
                                 </Card>
@@ -1801,9 +2085,7 @@ export const Reports: React.FC = () => {
                                   <TabsTrigger value="services">
                                     Top Services
                                   </TabsTrigger>
-                                  <TabsTrigger value="tips">
-                                    Tips
-                                  </TabsTrigger>
+                                  <TabsTrigger value="tips">Tips</TabsTrigger>
                                   <TabsTrigger value="discounts">
                                     Discounts
                                   </TabsTrigger>
@@ -1827,71 +2109,80 @@ export const Reports: React.FC = () => {
                                           Appointment Completion
                                         </TableCell>
                                         <TableCell>
-                                          {service.appointmentCompletionRate ?? 'N/A'}%
+                                          {service.appointmentCompletionRate ??
+                                            "N/A"}
+                                          %
                                         </TableCell>
                                         <TableCell>
                                           <Badge
                                             variant={
-                                              (service.appointmentCompletionRate ?? 0) > 90
+                                              (service.appointmentCompletionRate ??
+                                                0) > 90
                                                 ? "default"
-                                                : (service.appointmentCompletionRate ?? 0) > 75
-                                                  ? "secondary"
-                                                  : "outline"
+                                                : (service.appointmentCompletionRate ??
+                                                    0) > 75
+                                                ? "secondary"
+                                                : "outline"
                                             }
                                           >
-                                            {(service.appointmentCompletionRate ?? 0) > 90
+                                            {(service.appointmentCompletionRate ??
+                                              0) > 90
                                               ? "Excellent"
-                                              : (service.appointmentCompletionRate ?? 0) > 75
-                                                ? "Good"
-                                                : "Needs Improvement"}
+                                              : (service.appointmentCompletionRate ??
+                                                  0) > 75
+                                              ? "Good"
+                                              : "Needs Improvement"}
                                           </Badge>
                                         </TableCell>
                                       </TableRow>
                                       <TableRow>
-                                        <TableCell>
-                                          Growth Rate
-                                        </TableCell>
+                                        <TableCell>Growth Rate</TableCell>
                                         <TableCell>
                                           {service.growthRate}%
                                         </TableCell>
                                         <TableCell>
                                           <Badge
                                             variant={
-                                              parseFloat(service.growthRate) > 10
+                                              parseFloat(service.growthRate) >
+                                              10
                                                 ? "default"
-                                                : parseFloat(service.growthRate) > 0
-                                                  ? "secondary"
-                                                  : "outline"
+                                                : parseFloat(
+                                                    service.growthRate
+                                                  ) > 0
+                                                ? "secondary"
+                                                : "outline"
                                             }
                                           >
                                             {parseFloat(service.growthRate) > 10
                                               ? "Strong Growth"
-                                              : parseFloat(service.growthRate) > 0
-                                                ? "Growing"
-                                                : "Declining"}
+                                              : parseFloat(service.growthRate) >
+                                                0
+                                              ? "Growing"
+                                              : "Declining"}
                                           </Badge>
                                         </TableCell>
                                       </TableRow>
                                       <TableRow>
                                         <TableCell>Utilization Rate</TableCell>
                                         <TableCell>
-                                          {service.utilization ?? 'N/A'}%
+                                          {service.utilization ?? "N/A"}%
                                         </TableCell>
                                         <TableCell>
                                           <Badge
                                             variant={
                                               (service.utilization ?? 0) > 85
                                                 ? "default"
-                                                : (service.utilization ?? 0) > 70
-                                                  ? "secondary"
-                                                  : "outline"
+                                                : (service.utilization ?? 0) >
+                                                  70
+                                                ? "secondary"
+                                                : "outline"
                                             }
                                           >
                                             {(service.utilization ?? 0) > 85
                                               ? "High"
                                               : (service.utilization ?? 0) > 70
-                                                ? "Good"
-                                                : "Low"}
+                                              ? "Good"
+                                              : "Low"}
                                           </Badge>
                                         </TableCell>
                                       </TableRow>
@@ -1900,7 +2191,11 @@ export const Reports: React.FC = () => {
                                           Services Per Appointment
                                         </TableCell>
                                         <TableCell>
-                                          {service.averageServiceTime ? service.averageServiceTime.toFixed(1) : 'N/A'}
+                                          {service.averageServiceTime
+                                            ? service.averageServiceTime.toFixed(
+                                                1
+                                              )
+                                            : "N/A"}
                                         </TableCell>
                                         <TableCell>
                                           <Badge
@@ -1937,73 +2232,107 @@ export const Reports: React.FC = () => {
                                       </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                      {service.topServices && Array.isArray(service.topServices) ?
-                                        service.topServices.map((topService, idx) => (
-                                          <TableRow key={idx}>
-                                            <TableCell className="font-medium">
-                                              {topService.name}
-                                            </TableCell>
-                                            <TableCell>{topService.count}</TableCell>
-                                            <TableCell>
-                                              <Badge variant="secondary">
-                                                {idx === 0
-                                                  ? "Most Popular"
-                                                  : idx === 1
+                                      {service.topServices &&
+                                      Array.isArray(service.topServices) ? (
+                                        service.topServices.map(
+                                          (topService, idx) => (
+                                            <TableRow key={idx}>
+                                              <TableCell className="font-medium">
+                                                {topService.name}
+                                              </TableCell>
+                                              <TableCell>
+                                                {topService.count}
+                                              </TableCell>
+                                              <TableCell>
+                                                <Badge variant="secondary">
+                                                  {idx === 0
+                                                    ? "Most Popular"
+                                                    : idx === 1
                                                     ? "Popular"
                                                     : "Regular"}
-                                              </Badge>
-                                            </TableCell>
-                                          </TableRow>
-                                        ))
-                                        : (
-                                          <TableRow>
-                                            <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
-                                              No detailed service data available
-                                            </TableCell>
-                                          </TableRow>
-                                        )}
+                                                </Badge>
+                                              </TableCell>
+                                            </TableRow>
+                                          )
+                                        )
+                                      ) : (
+                                        <TableRow>
+                                          <TableCell
+                                            colSpan={3}
+                                            className="text-center py-4 text-muted-foreground"
+                                          >
+                                            No detailed service data available
+                                          </TableCell>
+                                        </TableRow>
+                                      )}
                                     </TableBody>
                                   </Table>
                                 </TabsContent>
 
-                                <TabsContent value="tips" className="space-y-4 pt-4">
+                                <TabsContent
+                                  value="tips"
+                                  className="space-y-4 pt-4"
+                                >
                                   {staffTipsDiscountsLoading ? (
                                     <div className="flex justify-center p-8">
                                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                     </div>
                                   ) : staffTipsDiscountsError ? (
                                     <div className="text-center p-8 text-destructive">
-                                      <p>Error loading tips data. Please try again.</p>
+                                      <p>
+                                        Error loading tips data. Please try
+                                        again.
+                                      </p>
                                     </div>
                                   ) : staffTipsDiscountsData?.data ? (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                       <Card>
                                         <CardHeader className="p-3">
-                                          <CardTitle className="text-sm">Total Tips</CardTitle>
+                                          <CardTitle className="text-sm">
+                                            Total Tips
+                                          </CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-3 pt-0">
                                           <p className="text-2xl font-bold">
-                                            ${parseFloat(staffTipsDiscountsData.data.summary.totalTips as string || '0').toFixed(2)}
+                                            $
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary.totalTips as string) ||
+                                                "0"
+                                            ).toFixed(2)}
                                           </p>
                                         </CardContent>
                                       </Card>
                                       <Card>
                                         <CardHeader className="p-3">
-                                          <CardTitle className="text-sm">Avg Tip %</CardTitle>
+                                          <CardTitle className="text-sm">
+                                            Avg Tip %
+                                          </CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-3 pt-0">
                                           <p className="text-2xl font-bold">
-                                            {parseFloat(staffTipsDiscountsData.data.summary.avgTipPercentage as string || '0').toFixed(2)}%
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary
+                                                .avgTipPercentage as string) ||
+                                                "0"
+                                            ).toFixed(2)}
+                                            %
                                           </p>
                                         </CardContent>
                                       </Card>
                                       <Card>
                                         <CardHeader className="p-3">
-                                          <CardTitle className="text-sm">Invoices w/ Tip</CardTitle>
+                                          <CardTitle className="text-sm">
+                                            Invoices w/ Tip
+                                          </CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-3 pt-0">
                                           <p className="text-2xl font-bold">
-                                            {staffTipsDiscountsData.data.summary.invoicesWithTip}
+                                            {
+                                              staffTipsDiscountsData.data
+                                                .summary.invoicesWithTip
+                                            }
                                           </p>
                                         </CardContent>
                                       </Card>
@@ -2015,44 +2344,71 @@ export const Reports: React.FC = () => {
                                   )}
                                 </TabsContent>
 
-                                <TabsContent value="discounts" className="space-y-4 pt-4">
+                                <TabsContent
+                                  value="discounts"
+                                  className="space-y-4 pt-4"
+                                >
                                   {staffTipsDiscountsLoading ? (
                                     <div className="flex justify-center p-8">
                                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                     </div>
                                   ) : staffTipsDiscountsError ? (
                                     <div className="text-center p-8 text-destructive">
-                                      <p>Error loading discounts data. Please try again.</p>
+                                      <p>
+                                        Error loading discounts data. Please try
+                                        again.
+                                      </p>
                                     </div>
                                   ) : staffTipsDiscountsData?.data ? (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                       <Card>
                                         <CardHeader className="p-3">
-                                          <CardTitle className="text-sm">Total Discounts</CardTitle>
+                                          <CardTitle className="text-sm">
+                                            Total Discounts
+                                          </CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-3 pt-0">
                                           <p className="text-2xl font-bold">
-                                            ${parseFloat(staffTipsDiscountsData.data.summary.totalDiscounts as string || '0').toFixed(2)}
+                                            $
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary
+                                                .totalDiscounts as string) ||
+                                                "0"
+                                            ).toFixed(2)}
                                           </p>
                                         </CardContent>
                                       </Card>
                                       <Card>
                                         <CardHeader className="p-3">
-                                          <CardTitle className="text-sm">Avg Discount %</CardTitle>
+                                          <CardTitle className="text-sm">
+                                            Avg Discount %
+                                          </CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-3 pt-0">
                                           <p className="text-2xl font-bold">
-                                            {parseFloat(staffTipsDiscountsData.data.summary.avgDiscountPercentage as string || '0').toFixed(2)}%
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary
+                                                .avgDiscountPercentage as string) ||
+                                                "0"
+                                            ).toFixed(2)}
+                                            %
                                           </p>
                                         </CardContent>
                                       </Card>
                                       <Card>
                                         <CardHeader className="p-3">
-                                          <CardTitle className="text-sm">Invoices w/ Discount</CardTitle>
+                                          <CardTitle className="text-sm">
+                                            Invoices w/ Discount
+                                          </CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-3 pt-0">
                                           <p className="text-2xl font-bold">
-                                            {staffTipsDiscountsData.data.summary.invoicesWithDiscount}
+                                            {
+                                              staffTipsDiscountsData.data
+                                                .summary.invoicesWithDiscount
+                                            }
                                           </p>
                                         </CardContent>
                                       </Card>
@@ -2089,7 +2445,9 @@ export const Reports: React.FC = () => {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{staffData?.data.length || 0}</div>
+                    <div className="text-2xl font-bold">
+                      {staffData?.data.length || 0}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       Active staff members
                     </p>
@@ -2106,12 +2464,16 @@ export const Reports: React.FC = () => {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       $
-                      {advancedStaffData?.data && advancedStaffData.data.length > 0 ?
-                        (advancedStaffData.data.reduce(
-                          (sum, staff) => sum + (staff.commissionEarned || 0),
-                          0
-                        ) / (advancedStaffData.data.length || 1)).toFixed(2)
-                        : '0.00'}
+                      {advancedStaffData?.data &&
+                      advancedStaffData.data.length > 0
+                        ? (
+                            advancedStaffData.data.reduce(
+                              (sum, staff) =>
+                                sum + (staff.commissionEarned || 0),
+                              0
+                            ) / (advancedStaffData.data.length || 1)
+                          ).toFixed(2)
+                        : "0.00"}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       Per staff member
@@ -2128,14 +2490,16 @@ export const Reports: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {advancedStaffData?.data && advancedStaffData.data.length > 0 ?
-                        Math.round(
-                          advancedStaffData.data.reduce(
-                            (sum, staff) => sum + (staff.utilization || 0),
-                            0
-                          ) / advancedStaffData.data.length
-                        )
-                        : 0}%
+                      {advancedStaffData?.data &&
+                      advancedStaffData.data.length > 0
+                        ? Math.round(
+                            advancedStaffData.data.reduce(
+                              (sum, staff) => sum + (staff.utilization || 0),
+                              0
+                            ) / advancedStaffData.data.length
+                          )
+                        : 0}
+                      %
                     </div>
                     <p className="text-xs text-muted-foreground">
                       Average across all staff
@@ -2152,14 +2516,16 @@ export const Reports: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {advancedStaffData?.data && advancedStaffData.data.length > 0 ?
-                        Math.round(
-                          advancedStaffData.data.reduce(
-                            (sum, staff) => sum + (staff.rebookRate || 0),
-                            0
-                          ) / advancedStaffData.data.length
-                        )
-                        : 0}%
+                      {advancedStaffData?.data &&
+                      advancedStaffData.data.length > 0
+                        ? Math.round(
+                            advancedStaffData.data.reduce(
+                              (sum, staff) => sum + (staff.rebookRate || 0),
+                              0
+                            ) / advancedStaffData.data.length
+                          )
+                        : 0}
+                      %
                     </div>
                     <p className="text-xs text-muted-foreground">
                       Client retention average
@@ -2175,13 +2541,16 @@ export const Reports: React.FC = () => {
                     <div className="flex items-center">
                       <div>
                         <CardTitle>Staff Performance</CardTitle>
-                        <CardDescription>{getDisplayDateRange()}</CardDescription>
+                        <CardDescription>
+                          {getDisplayDateRange()}
+                        </CardDescription>
                       </div>
 
                       {/* Push dropdown to the right */}
                       <div
                         ref={dropdownRef}
-                        className="inline-block text-left ml-auto absolute right-16">
+                        className="inline-block text-left ml-auto absolute right-16"
+                      >
                         {/* Dropdown Button */}
                         <button
                           onClick={() => setIsOpen(!isOpen)}
@@ -2208,25 +2577,24 @@ export const Reports: React.FC = () => {
                           <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
                             <div className="py-1">
                               {advancedStaffData?.data?.map((staff) => {
-                                return <a
-                                  href="#"
-                                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                  onClick={() => setIsOpen(false)}
-                                >
-                                  {staff.name}
-                                </a>
+                                return (
+                                  <a
+                                    href="#"
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={() => setIsOpen(false)}
+                                  >
+                                    {staff.name}
+                                  </a>
+                                );
                               })}
                             </div>
                           </div>
                         )}
                       </div>
                     </div>
-
                   </div>
                 </CardHeader>
-                <CardContent>
-                  {renderStaffTable()}
-                </CardContent>
+                <CardContent>{renderStaffTable()}</CardContent>
               </Card>
 
               {/* Staff Detail Dialog */}
@@ -2240,12 +2608,16 @@ export const Reports: React.FC = () => {
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Staff Performance Analysis</DialogTitle>
-                    <DialogDescription>Detailed metrics for selected staff member</DialogDescription>
+                    <DialogDescription>
+                      Detailed metrics for selected staff member
+                    </DialogDescription>
                   </DialogHeader>
                   {advancedStaffLoading ? (
                     <div className="flex flex-col items-center justify-center p-8 space-y-2">
                       <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                      <p className="text-muted-foreground">Loading staff performance details...</p>
+                      <p className="text-muted-foreground">
+                        Loading staff performance details...
+                      </p>
                     </div>
                   ) : advancedStaffError ? (
                     <div className="text-center p-8 text-destructive">
@@ -2254,764 +2626,882 @@ export const Reports: React.FC = () => {
                         variant="outline"
                         className="mt-4"
                         onClick={() => {
-                          const dateFrom = format(fromDate, 'yyyy-MM-dd');
-                          const dateTo = format(addDays(toDate, 1), 'yyyy-MM-dd');
+                          const dateFrom = format(fromDate, "yyyy-MM-dd");
+                          const dateTo = format(
+                            addDays(toDate, 1),
+                            "yyyy-MM-dd"
+                          );
                           if (selectedStaffMember) {
-                            fetchAdvancedStaff(dateFrom, dateTo, selectedStaffMember);
+                            fetchAdvancedStaff(
+                              dateFrom,
+                              dateTo,
+                              selectedStaffMember
+                            );
                           }
                         }}
                       >
                         Retry
                       </Button>
                     </div>
-                  ) : (
-                    advancedStaffData?.data && advancedStaffData.data.length > 0 ? (
-                      <div className="space-y-4">
-                        {advancedStaffData.data
-                          .filter(staff => staff.staff_id === selectedStaffMember)
-                          .map((staff) => {
-                            return (
-                              <div key={staff.staff_id} className="space-y-6">
-                                <div className="flex items-center space-x-4">
-                                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                                    {staff.image ? (
-                                      <img
-                                        src={staff.image}
-                                        alt={staff.name}
-                                        className="h-full w-full object-cover"
-                                      />
-                                    ) : (
-                                      <span className="text-xl font-semibold">
-                                        {staff.name.charAt(0)}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <h2 className="text-xl font-bold">
-                                      {staff.name}
-                                    </h2>
-                                    <div className="text-muted-foreground text-sm">
-                                      {staff.position || "Staff Member"}
-                                    </div>
+                  ) : advancedStaffData?.data &&
+                    advancedStaffData.data.length > 0 ? (
+                    <div className="space-y-4">
+                      {advancedStaffData.data
+                        .filter(
+                          (staff) => staff.staff_id === selectedStaffMember
+                        )
+                        .map((staff) => {
+                          return (
+                            <div key={staff.staff_id} className="space-y-6">
+                              <div className="flex items-center space-x-4">
+                                <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                                  {staff.image ? (
+                                    <img
+                                      src={staff.image}
+                                      alt={staff.name}
+                                      className="h-full w-full object-cover"
+                                    />
+                                  ) : (
+                                    <span className="text-xl font-semibold">
+                                      {staff.name.charAt(0)}
+                                    </span>
+                                  )}
+                                </div>
+                                <div>
+                                  <h2 className="text-xl font-bold">
+                                    {staff.name}
+                                  </h2>
+                                  <div className="text-muted-foreground text-sm">
+                                    {staff.position || "Staff Member"}
                                   </div>
                                 </div>
+                              </div>
 
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                  <Card className="overflow-hidden">
-                                    <CardHeader className="p-3">
-                                      <CardTitle className="text-sm">
-                                        Appointments
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-3 pt-0">
-                                      <p className="text-2xl font-bold">
-                                        {staff.appointments}
-                                      </p>
-                                    </CardContent>
-                                  </Card>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <Card className="overflow-hidden">
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Appointments
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      {staff.appointments}
+                                    </p>
+                                  </CardContent>
+                                </Card>
 
-                                  <Card className="overflow-hidden">
-                                    <CardHeader className="p-3">
-                                      <CardTitle className="text-sm">
-                                        Revenue
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-3 pt-0">
-                                      <p className="text-2xl font-bold">
-                                        ${staff.revenue.toLocaleString()}
-                                      </p>
-                                    </CardContent>
-                                  </Card>
+                                <Card className="overflow-hidden">
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Revenue
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      ${staff.revenue.toLocaleString()}
+                                    </p>
+                                  </CardContent>
+                                </Card>
 
-                                  <Card className="overflow-hidden">
-                                    <CardHeader className="p-3">
-                                      <CardTitle className="text-sm">
-                                        Srv Comm.
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-3 pt-0">
-                                      <p className="text-2xl font-bold">
-                                        ${staff.commissionFromServices.toLocaleString()}
-                                      </p>
-                                    </CardContent>
-                                  </Card>
+                                <Card className="overflow-hidden">
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Srv Comm.
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      $
+                                      {staff.commissionFromServices.toLocaleString()}
+                                    </p>
+                                  </CardContent>
+                                </Card>
 
-                                  <Card className="overflow-hidden">
-                                    <CardHeader className="p-3">
-                                      <CardTitle className="text-sm">
-                                        Prod Comm.
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-3 pt-0">
-                                      <p className="text-2xl font-bold">
-                                        ${staff.commissionFromProducts.toLocaleString()}
-                                      </p>
-                                    </CardContent>
-                                  </Card>
+                                <Card className="overflow-hidden">
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Prod Comm.
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      $
+                                      {staff.commissionFromProducts.toLocaleString()}
+                                    </p>
+                                  </CardContent>
+                                </Card>
 
-                                  <Card className="overflow-hidden">
-                                    <CardHeader className="p-3">
-                                      <CardTitle className="text-sm">
-                                        Total Comm.
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-3 pt-0">
-                                      <p className="text-2xl font-bold">
-                                        ${staff.commissionEarned.toLocaleString()}
-                                      </p>
-                                    </CardContent>
-                                  </Card>
-                                </div>
+                                <Card className="overflow-hidden">
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Total Comm.
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      ${staff.commissionEarned.toLocaleString()}
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                              </div>
 
-                                <Tabs defaultValue="metrics" className="w-full">
-                                  <TabsList className="grid w-full grid-cols-4">
-                                    <TabsTrigger value="metrics">
-                                      Performance Metrics
-                                    </TabsTrigger>
-                                    <TabsTrigger value="services">
-                                      Top Services
-                                    </TabsTrigger>
-                                    <TabsTrigger value="tips">
-                                      Tips
-                                    </TabsTrigger>
-                                    <TabsTrigger value="discounts">
-                                      Discounts
-                                    </TabsTrigger>
-                                  </TabsList>
+                              <Tabs defaultValue="metrics" className="w-full">
+                                <TabsList className="grid w-full grid-cols-4">
+                                  <TabsTrigger value="metrics">
+                                    Performance Metrics
+                                  </TabsTrigger>
+                                  <TabsTrigger value="services">
+                                    Top Services
+                                  </TabsTrigger>
+                                  <TabsTrigger value="tips">Tips</TabsTrigger>
+                                  <TabsTrigger value="discounts">
+                                    Discounts
+                                  </TabsTrigger>
+                                </TabsList>
 
-                                  <TabsContent
-                                    value="metrics"
-                                    className="space-y-4 pt-4"
-                                  >
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>Metric</TableHead>
-                                          <TableHead>Value</TableHead>
-                                          <TableHead>Status</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        <TableRow>
-                                          <TableCell>
-                                            Appointment Completion
-                                          </TableCell>
-                                          <TableCell>
-                                            {staff.utilization}%
-                                          </TableCell>
-                                          <TableCell>
-                                            <Badge
-                                              variant={
-                                                staff.utilization > 90
-                                                  ? "default"
-                                                  : staff.utilization > 75
-                                                    ? "secondary"
-                                                    : "outline"
-                                              }
-                                            >
-                                              {staff.utilization > 90
-                                                ? "Excellent"
+                                <TabsContent
+                                  value="metrics"
+                                  className="space-y-4 pt-4"
+                                >
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead>Metric</TableHead>
+                                        <TableHead>Value</TableHead>
+                                        <TableHead>Status</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      <TableRow>
+                                        <TableCell>
+                                          Appointment Completion
+                                        </TableCell>
+                                        <TableCell>
+                                          {staff.utilization}%
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge
+                                            variant={
+                                              staff.utilization > 90
+                                                ? "default"
                                                 : staff.utilization > 75
-                                                  ? "Good"
-                                                  : "Needs Improvement"}
-                                            </Badge>
-                                          </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                          <TableCell>
-                                            Rebook Rate
-                                          </TableCell>
-                                          <TableCell>
-                                            {staff.rebookRate}%
-                                          </TableCell>
-                                          <TableCell>
-                                            <Badge
-                                              variant={
-                                                staff.rebookRate > 70
-                                                  ? "default"
-                                                  : staff.rebookRate > 50
-                                                    ? "secondary"
-                                                    : "outline"
-                                              }
-                                            >
-                                              {staff.rebookRate > 70
-                                                ? "Excellent"
+                                                ? "secondary"
+                                                : "outline"
+                                            }
+                                          >
+                                            {staff.utilization > 90
+                                              ? "Excellent"
+                                              : staff.utilization > 75
+                                              ? "Good"
+                                              : "Needs Improvement"}
+                                          </Badge>
+                                        </TableCell>
+                                      </TableRow>
+                                      <TableRow>
+                                        <TableCell>Rebook Rate</TableCell>
+                                        <TableCell>
+                                          {staff.rebookRate}%
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge
+                                            variant={
+                                              staff.rebookRate > 70
+                                                ? "default"
                                                 : staff.rebookRate > 50
-                                                  ? "Good"
-                                                  : "Needs Improvement"}
-                                            </Badge>
-                                          </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                          <TableCell>Utilization Rate</TableCell>
-                                          <TableCell>
-                                            {staff.utilization}%
-                                          </TableCell>
-                                          <TableCell>
-                                            <Badge
-                                              variant={
-                                                staff.utilization > 85
-                                                  ? "default"
-                                                  : staff.utilization > 70
-                                                    ? "secondary"
-                                                    : "outline"
-                                              }
-                                            >
-                                              {staff.utilization > 85
-                                                ? "High"
+                                                ? "secondary"
+                                                : "outline"
+                                            }
+                                          >
+                                            {staff.rebookRate > 70
+                                              ? "Excellent"
+                                              : staff.rebookRate > 50
+                                              ? "Good"
+                                              : "Needs Improvement"}
+                                          </Badge>
+                                        </TableCell>
+                                      </TableRow>
+                                      <TableRow>
+                                        <TableCell>Utilization Rate</TableCell>
+                                        <TableCell>
+                                          {staff.utilization}%
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge
+                                            variant={
+                                              staff.utilization > 85
+                                                ? "default"
                                                 : staff.utilization > 70
-                                                  ? "Good"
-                                                  : "Low"}
-                                            </Badge>
-                                          </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                          <TableCell>
-                                            Services Per Appointment
-                                          </TableCell>
-                                          <TableCell>
-                                            {staff.averageServiceTime.toFixed(1)}
-                                          </TableCell>
-                                          <TableCell>
-                                            <Badge
-                                              variant={
-                                                Number(
-                                                  staff.averageServiceTime,
-                                                ) > 1.5
-                                                  ? "default"
-                                                  : "secondary"
-                                              }
-                                            >
-                                              {Number(
-                                                staff.averageServiceTime,
-                                              ) > 1.5
-                                                ? "High"
-                                                : "Average"}
-                                            </Badge>
-                                          </TableCell>
-                                        </TableRow>
-                                      </TableBody>
-                                    </Table>
-                                  </TabsContent>
+                                                ? "secondary"
+                                                : "outline"
+                                            }
+                                          >
+                                            {staff.utilization > 85
+                                              ? "High"
+                                              : staff.utilization > 70
+                                              ? "Good"
+                                              : "Low"}
+                                          </Badge>
+                                        </TableCell>
+                                      </TableRow>
+                                      <TableRow>
+                                        <TableCell>
+                                          Services Per Appointment
+                                        </TableCell>
+                                        <TableCell>
+                                          {staff.averageServiceTime.toFixed(1)}
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge
+                                            variant={
+                                              Number(staff.averageServiceTime) >
+                                              1.5
+                                                ? "default"
+                                                : "secondary"
+                                            }
+                                          >
+                                            {Number(staff.averageServiceTime) >
+                                            1.5
+                                              ? "High"
+                                              : "Average"}
+                                          </Badge>
+                                        </TableCell>
+                                      </TableRow>
+                                    </TableBody>
+                                  </Table>
+                                </TabsContent>
 
-                                  <TabsContent
-                                    value="services"
-                                    className="space-y-4 pt-4"
-                                  >
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>Service</TableHead>
-                                          <TableHead>Bookings</TableHead>
-                                          <TableHead>Performance</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {staff.topServices && Array.isArray(staff.topServices) ?
-                                          staff.topServices.map((topService: any, idx: any) => (
+                                <TabsContent
+                                  value="services"
+                                  className="space-y-4 pt-4"
+                                >
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead>Service</TableHead>
+                                        <TableHead>Bookings</TableHead>
+                                        <TableHead>Performance</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {staff.topServices &&
+                                      Array.isArray(staff.topServices) ? (
+                                        staff.topServices.map(
+                                          (topService: any, idx: any) => (
                                             <TableRow key={idx}>
                                               <TableCell className="font-medium">
                                                 {topService.name}
                                               </TableCell>
-                                              <TableCell>{topService.count}</TableCell>
+                                              <TableCell>
+                                                {topService.count}
+                                              </TableCell>
                                               <TableCell>
                                                 <Badge variant="secondary">
                                                   {idx === 0
                                                     ? "Most Popular"
                                                     : idx === 1
-                                                      ? "Popular"
-                                                      : "Regular"}
+                                                    ? "Popular"
+                                                    : "Regular"}
                                                 </Badge>
                                               </TableCell>
                                             </TableRow>
-                                          ))
-                                          : (
-                                            <TableRow>
-                                              <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
-                                                No detailed service data available
-                                              </TableCell>
-                                            </TableRow>
-                                          )}
-                                      </TableBody>
-                                    </Table>
-                                  </TabsContent>
-
-                                  <TabsContent value="tips" className="space-y-4 pt-4">
-                                    {staffTipsDiscountsLoading ? (
-                                      <div className="flex justify-center p-8">
-                                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                      </div>
-                                    ) : staffTipsDiscountsError ? (
-                                      <div className="text-center p-8 text-destructive">
-                                        <p>Error loading tips data. Please try again.</p>
-                                      </div>
-                                    ) : staffTipsDiscountsData?.data ? (
-                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <Card>
-                                          <CardHeader className="p-3">
-                                            <CardTitle className="text-sm">Total Tips</CardTitle>
-                                          </CardHeader>
-                                          <CardContent className="p-3 pt-0">
-                                            <p className="text-2xl font-bold">
-                                              ${parseFloat(staffTipsDiscountsData.data.summary.totalTips as string || '0').toFixed(2)}
-                                            </p>
-                                          </CardContent>
-                                        </Card>
-                                        <Card>
-                                          <CardHeader className="p-3">
-                                            <CardTitle className="text-sm">Avg Tip %</CardTitle>
-                                          </CardHeader>
-                                          <CardContent className="p-3 pt-0">
-                                            <p className="text-2xl font-bold">
-                                              {parseFloat(staffTipsDiscountsData.data.summary.avgTipPercentage as string || '0').toFixed(2)}%
-                                            </p>
-                                          </CardContent>
-                                        </Card>
-                                        <Card>
-                                          <CardHeader className="p-3">
-                                            <CardTitle className="text-sm">Invoices w/ Tip</CardTitle>
-                                          </CardHeader>
-                                          <CardContent className="p-3 pt-0">
-                                            <p className="text-2xl font-bold">
-                                              {staffTipsDiscountsData.data.summary.invoicesWithTip}
-                                            </p>
-                                          </CardContent>
-                                        </Card>
-                                      </div>
-                                    ) : (
-                                      <div className="text-center p-8 text-muted-foreground">
-                                        No tips data available
-                                      </div>
-                                    )}
-                                  </TabsContent>
-
-                                  <TabsContent value="discounts" className="space-y-4 pt-4">
-                                    {staffTipsDiscountsLoading ? (
-                                      <div className="flex justify-center p-8">
-                                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                      </div>
-                                    ) : staffTipsDiscountsError ? (
-                                      <div className="text-center p-8 text-destructive">
-                                        <p>Error loading discounts data. Please try again.</p>
-                                      </div>
-                                    ) : staffTipsDiscountsData?.data ? (
-                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <Card>
-                                          <CardHeader className="p-3">
-                                            <CardTitle className="text-sm">Total Discounts</CardTitle>
-                                          </CardHeader>
-                                          <CardContent className="p-3 pt-0">
-                                            <p className="text-2xl font-bold">
-                                              ${parseFloat(staffTipsDiscountsData.data.summary.totalDiscounts as string || '0').toFixed(2)}
-                                            </p>
-                                          </CardContent>
-                                        </Card>
-                                        <Card>
-                                          <CardHeader className="p-3">
-                                            <CardTitle className="text-sm">Avg Discount %</CardTitle>
-                                          </CardHeader>
-                                          <CardContent className="p-3 pt-0">
-                                            <p className="text-2xl font-bold">
-                                              {parseFloat(staffTipsDiscountsData.data.summary.avgDiscountPercentage as string || '0').toFixed(2)}%
-                                            </p>
-                                          </CardContent>
-                                        </Card>
-                                        <Card>
-                                          <CardHeader className="p-3">
-                                            <CardTitle className="text-sm">Invoices w/ Discount</CardTitle>
-                                          </CardHeader>
-                                          <CardContent className="p-3 pt-0">
-                                            <p className="text-2xl font-bold">
-                                              {staffTipsDiscountsData.data.summary.invoicesWithDiscount}
-                                            </p>
-                                          </CardContent>
-                                        </Card>
-                                      </div>
-                                    ) : (
-                                      <div className="text-center p-8 text-muted-foreground">
-                                        No discount data available
-                                      </div>
-                                    )}
-                                  </TabsContent>
-                                </Tabs>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    ) : (
-                      selectedStaffDetails ? (
-                        <div className="space-y-4">
-                          <div key={selectedStaffDetails.staff_id} className="space-y-6">
-                            <div className="flex items-center space-x-4">
-                              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                                {selectedStaffDetails.image ? (
-                                  <img
-                                    src={selectedStaffDetails.image}
-                                    alt={selectedStaffDetails.name}
-                                    className="h-full w-full object-cover"
-                                  />
-                                ) : (
-                                  <span className="text-xl font-semibold">
-                                    {selectedStaffDetails.name.charAt(0)}
-                                  </span>
-                                )}
-                              </div>
-                              <div>
-                                <h2 className="text-xl font-bold">
-                                  {selectedStaffDetails.name}
-                                </h2>
-                                <div className="text-muted-foreground text-sm">
-                                  {selectedStaffDetails.position || "Staff Member"}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              <Card className="overflow-hidden">
-                                <CardHeader className="p-3">
-                                  <CardTitle className="text-sm">
-                                    Appointments
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-3 pt-0">
-                                  <p className="text-2xl font-bold">
-                                    {selectedStaffDetails.appointments}
-                                  </p>
-                                </CardContent>
-                              </Card>
-
-                              <Card className="overflow-hidden">
-                                <CardHeader className="p-3">
-                                  <CardTitle className="text-sm">
-                                    Revenue
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-3 pt-0">
-                                  <p className="text-2xl font-bold">
-                                    ${selectedStaffDetails.revenue.toLocaleString()}
-                                  </p>
-                                </CardContent>
-                              </Card>
-
-                              <Card className="overflow-hidden">
-                                <CardHeader className="p-3">
-                                  <CardTitle className="text-sm">
-                                    Srv Comm.
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-3 pt-0">
-                                  <p className="text-2xl font-bold">
-                                    ${selectedStaffDetails.commissionFromServices.toLocaleString()}
-                                  </p>
-                                </CardContent>
-                              </Card>
-
-                              <Card className="overflow-hidden">
-                                <CardHeader className="p-3">
-                                  <CardTitle className="text-sm">
-                                    Prod Comm.
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-3 pt-0">
-                                  <p className="text-2xl font-bold">
-                                    ${selectedStaffDetails.commissionFromProducts.toLocaleString()}
-                                  </p>
-                                </CardContent>
-                              </Card>
-
-                              <Card className="overflow-hidden">
-                                <CardHeader className="p-3">
-                                  <CardTitle className="text-sm">
-                                    Total Comm.
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-3 pt-0">
-                                  <p className="text-2xl font-bold">
-                                    ${selectedStaffDetails.commissionEarned.toLocaleString()}
-                                  </p>
-                                </CardContent>
-                              </Card>
-                            </div>
-
-                            <Tabs defaultValue="metrics" className="w-full">
-                              <TabsList className="grid w-full grid-cols-4">
-                                <TabsTrigger value="metrics">
-                                  Performance Metrics
-                                </TabsTrigger>
-                                <TabsTrigger value="services">
-                                  Top Services
-                                </TabsTrigger>
-                                <TabsTrigger value="tips">
-                                  Tips
-                                </TabsTrigger>
-                                <TabsTrigger value="discounts">
-                                  Discounts
-                                </TabsTrigger>
-                              </TabsList>
-
-                              <TabsContent
-                                value="metrics"
-                                className="space-y-4 pt-4"
-                              >
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead>Metric</TableHead>
-                                      <TableHead>Value</TableHead>
-                                      <TableHead>Status</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    <TableRow>
-                                      <TableCell>
-                                        Appointment Completion
-                                      </TableCell>
-                                      <TableCell>
-                                        {selectedStaffDetails.utilization}%
-                                      </TableCell>
-                                      <TableCell>
-                                        <Badge
-                                          variant={
-                                            selectedStaffDetails.utilization > 90
-                                              ? "default"
-                                              : selectedStaffDetails.utilization > 75
-                                                ? "secondary"
-                                                : "outline"
-                                          }
-                                        >
-                                          {selectedStaffDetails.utilization > 90
-                                            ? "Excellent"
-                                            : selectedStaffDetails.utilization > 75
-                                              ? "Good"
-                                              : "Needs Improvement"}
-                                        </Badge>
-                                      </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                      <TableCell>
-                                        Rebook Rate
-                                      </TableCell>
-                                      <TableCell>
-                                        {selectedStaffDetails.rebookRate}%
-                                      </TableCell>
-                                      <TableCell>
-                                        <Badge
-                                          variant={
-                                            selectedStaffDetails.rebookRate > 70
-                                              ? "default"
-                                              : selectedStaffDetails.rebookRate > 50
-                                                ? "secondary"
-                                                : "outline"
-                                          }
-                                        >
-                                          {selectedStaffDetails.rebookRate > 70
-                                            ? "Excellent"
-                                            : selectedStaffDetails.rebookRate > 50
-                                              ? "Good"
-                                              : "Needs Improvement"}
-                                        </Badge>
-                                      </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                      <TableCell>Utilization Rate</TableCell>
-                                      <TableCell>
-                                        {selectedStaffDetails.utilization}%
-                                      </TableCell>
-                                      <TableCell>
-                                        <Badge
-                                          variant={
-                                            selectedStaffDetails.utilization > 85
-                                              ? "default"
-                                              : selectedStaffDetails.utilization > 70
-                                                ? "secondary"
-                                                : "outline"
-                                          }
-                                        >
-                                          {selectedStaffDetails.utilization > 85
-                                            ? "High"
-                                            : selectedStaffDetails.utilization > 70
-                                              ? "Good"
-                                              : "Low"}
-                                        </Badge>
-                                      </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                      <TableCell>
-                                        Services Per Appointment
-                                      </TableCell>
-                                      <TableCell>
-                                        {selectedStaffDetails.averageServiceTime.toFixed(1)}
-                                      </TableCell>
-                                      <TableCell>
-                                        <Badge
-                                          variant={
-                                            Number(
-                                              selectedStaffDetails.averageServiceTime,
-                                            ) > 1.5
-                                              ? "default"
-                                              : "secondary"
-                                          }
-                                        >
-                                          {Number(
-                                            selectedStaffDetails.averageServiceTime,
-                                          ) > 1.5
-                                            ? "High"
-                                            : "Average"}
-                                        </Badge>
-                                      </TableCell>
-                                    </TableRow>
-                                  </TableBody>
-                                </Table>
-                              </TabsContent>
-
-                              <TabsContent
-                                value="services"
-                                className="space-y-4 pt-4"
-                              >
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead>Service</TableHead>
-                                      <TableHead>Bookings</TableHead>
-                                      <TableHead>Performance</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {selectedStaffDetails.topServices && Array.isArray(selectedStaffDetails.topServices) ?
-                                      selectedStaffDetails.topServices.map((topService: any, idx: any) => (
-                                        <TableRow key={idx}>
-                                          <TableCell className="font-medium">
-                                            {topService.name}
-                                          </TableCell>
-                                          <TableCell>{topService.count}</TableCell>
-                                          <TableCell>
-                                            <Badge variant="secondary">
-                                              {idx === 0
-                                                ? "Most Popular"
-                                                : idx === 1
-                                                  ? "Popular"
-                                                  : "Regular"}
-                                            </Badge>
-                                          </TableCell>
-                                        </TableRow>
-                                      ))
-                                      : (
+                                          )
+                                        )
+                                      ) : (
                                         <TableRow>
-                                          <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
+                                          <TableCell
+                                            colSpan={3}
+                                            className="text-center py-4 text-muted-foreground"
+                                          >
                                             No detailed service data available
                                           </TableCell>
                                         </TableRow>
                                       )}
-                                  </TableBody>
-                                </Table>
-                              </TabsContent>
+                                    </TableBody>
+                                  </Table>
+                                </TabsContent>
 
-                              <TabsContent value="tips" className="space-y-4 pt-4">
-                                {staffTipsDiscountsLoading ? (
-                                  <div className="flex justify-center p-8">
-                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                  </div>
-                                ) : staffTipsDiscountsError ? (
-                                  <div className="text-center p-8 text-destructive">
-                                    <p>Error loading tips data. Please try again.</p>
-                                  </div>
-                                ) : staffTipsDiscountsData?.data ? (
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <Card>
-                                      <CardHeader className="p-3">
-                                        <CardTitle className="text-sm">Total Tips</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-0">
-                                        <p className="text-2xl font-bold">
-                                          ${parseFloat(staffTipsDiscountsData.data.summary.totalTips as string || '0').toFixed(2)}
-                                        </p>
-                                      </CardContent>
-                                    </Card>
-                                    <Card>
-                                      <CardHeader className="p-3">
-                                        <CardTitle className="text-sm">Avg Tip %</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-0">
-                                        <p className="text-2xl font-bold">
-                                          {parseFloat(staffTipsDiscountsData.data.summary.avgTipPercentage as string || '0').toFixed(2)}%
-                                        </p>
-                                      </CardContent>
-                                    </Card>
-                                    <Card>
-                                      <CardHeader className="p-3">
-                                        <CardTitle className="text-sm">Invoices w/ Tip</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-0">
-                                        <p className="text-2xl font-bold">
-                                          {staffTipsDiscountsData.data.summary.invoicesWithTip}
-                                        </p>
-                                      </CardContent>
-                                    </Card>
-                                  </div>
-                                ) : (
-                                  <div className="text-center p-8 text-muted-foreground">
-                                    No tips data available
-                                  </div>
-                                )}
-                              </TabsContent>
+                                <TabsContent
+                                  value="tips"
+                                  className="space-y-4 pt-4"
+                                >
+                                  {staffTipsDiscountsLoading ? (
+                                    <div className="flex justify-center p-8">
+                                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                    </div>
+                                  ) : staffTipsDiscountsError ? (
+                                    <div className="text-center p-8 text-destructive">
+                                      <p>
+                                        Error loading tips data. Please try
+                                        again.
+                                      </p>
+                                    </div>
+                                  ) : staffTipsDiscountsData?.data ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                      <Card>
+                                        <CardHeader className="p-3">
+                                          <CardTitle className="text-sm">
+                                            Total Tips
+                                          </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0">
+                                          <p className="text-2xl font-bold">
+                                            $
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary.totalTips as string) ||
+                                                "0"
+                                            ).toFixed(2)}
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                      <Card>
+                                        <CardHeader className="p-3">
+                                          <CardTitle className="text-sm">
+                                            Avg Tip %
+                                          </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0">
+                                          <p className="text-2xl font-bold">
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary
+                                                .avgTipPercentage as string) ||
+                                                "0"
+                                            ).toFixed(2)}
+                                            %
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                      <Card>
+                                        <CardHeader className="p-3">
+                                          <CardTitle className="text-sm">
+                                            Invoices w/ Tip
+                                          </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0">
+                                          <p className="text-2xl font-bold">
+                                            {
+                                              staffTipsDiscountsData.data
+                                                .summary.invoicesWithTip
+                                            }
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                    </div>
+                                  ) : (
+                                    <div className="text-center p-8 text-muted-foreground">
+                                      No tips data available
+                                    </div>
+                                  )}
+                                </TabsContent>
 
-                              <TabsContent value="discounts" className="space-y-4 pt-4">
-                                {staffTipsDiscountsLoading ? (
-                                  <div className="flex justify-center p-8">
-                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                  </div>
-                                ) : staffTipsDiscountsError ? (
-                                  <div className="text-center p-8 text-destructive">
-                                    <p>Error loading discounts data. Please try again.</p>
-                                  </div>
-                                ) : staffTipsDiscountsData?.data ? (
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <Card>
-                                      <CardHeader className="p-3">
-                                        <CardTitle className="text-sm">Total Discounts</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-0">
-                                        <p className="text-2xl font-bold">
-                                          ${parseFloat(staffTipsDiscountsData.data.summary.totalDiscounts as string || '0').toFixed(2)}
-                                        </p>
-                                      </CardContent>
-                                    </Card>
-                                    <Card>
-                                      <CardHeader className="p-3">
-                                        <CardTitle className="text-sm">Avg Discount %</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-0">
-                                        <p className="text-2xl font-bold">
-                                          {parseFloat(staffTipsDiscountsData.data.summary.avgDiscountPercentage as string || '0').toFixed(2)}%
-                                        </p>
-                                      </CardContent>
-                                    </Card>
-                                    <Card>
-                                      <CardHeader className="p-3">
-                                        <CardTitle className="text-sm">Invoices w/ Discount</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-0">
-                                        <p className="text-2xl font-bold">
-                                          {staffTipsDiscountsData.data.summary.invoicesWithDiscount}
-                                        </p>
-                                      </CardContent>
-                                    </Card>
-                                  </div>
-                                ) : (
-                                  <div className="text-center p-8 text-muted-foreground">
-                                    No discount data available
-                                  </div>
-                                )}
-                              </TabsContent>
-                            </Tabs>
+                                <TabsContent
+                                  value="discounts"
+                                  className="space-y-4 pt-4"
+                                >
+                                  {staffTipsDiscountsLoading ? (
+                                    <div className="flex justify-center p-8">
+                                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                    </div>
+                                  ) : staffTipsDiscountsError ? (
+                                    <div className="text-center p-8 text-destructive">
+                                      <p>
+                                        Error loading discounts data. Please try
+                                        again.
+                                      </p>
+                                    </div>
+                                  ) : staffTipsDiscountsData?.data ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                      <Card>
+                                        <CardHeader className="p-3">
+                                          <CardTitle className="text-sm">
+                                            Total Discounts
+                                          </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0">
+                                          <p className="text-2xl font-bold">
+                                            $
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary
+                                                .totalDiscounts as string) ||
+                                                "0"
+                                            ).toFixed(2)}
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                      <Card>
+                                        <CardHeader className="p-3">
+                                          <CardTitle className="text-sm">
+                                            Avg Discount %
+                                          </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0">
+                                          <p className="text-2xl font-bold">
+                                            {parseFloat(
+                                              (staffTipsDiscountsData.data
+                                                .summary
+                                                .avgDiscountPercentage as string) ||
+                                                "0"
+                                            ).toFixed(2)}
+                                            %
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                      <Card>
+                                        <CardHeader className="p-3">
+                                          <CardTitle className="text-sm">
+                                            Invoices w/ Discount
+                                          </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-0">
+                                          <p className="text-2xl font-bold">
+                                            {
+                                              staffTipsDiscountsData.data
+                                                .summary.invoicesWithDiscount
+                                            }
+                                          </p>
+                                        </CardContent>
+                                      </Card>
+                                    </div>
+                                  ) : (
+                                    <div className="text-center p-8 text-muted-foreground">
+                                      No discount data available
+                                    </div>
+                                  )}
+                                </TabsContent>
+                              </Tabs>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ) : selectedStaffDetails ? (
+                    <div className="space-y-4">
+                      <div
+                        key={selectedStaffDetails.staff_id}
+                        className="space-y-6"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                            {selectedStaffDetails.image ? (
+                              <img
+                                src={selectedStaffDetails.image}
+                                alt={selectedStaffDetails.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-xl font-semibold">
+                                {selectedStaffDetails.name.charAt(0)}
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <h2 className="text-xl font-bold">
+                              {selectedStaffDetails.name}
+                            </h2>
+                            <div className="text-muted-foreground text-sm">
+                              {selectedStaffDetails.position || "Staff Member"}
+                            </div>
                           </div>
                         </div>
-                      ) : (
-                        <div className="py-8 text-center text-muted-foreground">
-                          No detailed metrics available for this staff member
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <Card className="overflow-hidden">
+                            <CardHeader className="p-3">
+                              <CardTitle className="text-sm">
+                                Appointments
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-3 pt-0">
+                              <p className="text-2xl font-bold">
+                                {selectedStaffDetails.appointments}
+                              </p>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="overflow-hidden">
+                            <CardHeader className="p-3">
+                              <CardTitle className="text-sm">Revenue</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-3 pt-0">
+                              <p className="text-2xl font-bold">
+                                ${selectedStaffDetails.revenue.toLocaleString()}
+                              </p>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="overflow-hidden">
+                            <CardHeader className="p-3">
+                              <CardTitle className="text-sm">
+                                Srv Comm.
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-3 pt-0">
+                              <p className="text-2xl font-bold">
+                                $
+                                {selectedStaffDetails.commissionFromServices.toLocaleString()}
+                              </p>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="overflow-hidden">
+                            <CardHeader className="p-3">
+                              <CardTitle className="text-sm">
+                                Prod Comm.
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-3 pt-0">
+                              <p className="text-2xl font-bold">
+                                $
+                                {selectedStaffDetails.commissionFromProducts.toLocaleString()}
+                              </p>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="overflow-hidden">
+                            <CardHeader className="p-3">
+                              <CardTitle className="text-sm">
+                                Total Comm.
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-3 pt-0">
+                              <p className="text-2xl font-bold">
+                                $
+                                {selectedStaffDetails.commissionEarned.toLocaleString()}
+                              </p>
+                            </CardContent>
+                          </Card>
                         </div>
-                      )
-                    )
+
+                        <Tabs defaultValue="metrics" className="w-full">
+                          <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="metrics">
+                              Performance Metrics
+                            </TabsTrigger>
+                            <TabsTrigger value="services">
+                              Top Services
+                            </TabsTrigger>
+                            <TabsTrigger value="tips">Tips</TabsTrigger>
+                            <TabsTrigger value="discounts">
+                              Discounts
+                            </TabsTrigger>
+                          </TabsList>
+
+                          <TabsContent
+                            value="metrics"
+                            className="space-y-4 pt-4"
+                          >
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Metric</TableHead>
+                                  <TableHead>Value</TableHead>
+                                  <TableHead>Status</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell>Appointment Completion</TableCell>
+                                  <TableCell>
+                                    {selectedStaffDetails.utilization}%
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant={
+                                        selectedStaffDetails.utilization > 90
+                                          ? "default"
+                                          : selectedStaffDetails.utilization >
+                                            75
+                                          ? "secondary"
+                                          : "outline"
+                                      }
+                                    >
+                                      {selectedStaffDetails.utilization > 90
+                                        ? "Excellent"
+                                        : selectedStaffDetails.utilization > 75
+                                        ? "Good"
+                                        : "Needs Improvement"}
+                                    </Badge>
+                                  </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                  <TableCell>Rebook Rate</TableCell>
+                                  <TableCell>
+                                    {selectedStaffDetails.rebookRate}%
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant={
+                                        selectedStaffDetails.rebookRate > 70
+                                          ? "default"
+                                          : selectedStaffDetails.rebookRate > 50
+                                          ? "secondary"
+                                          : "outline"
+                                      }
+                                    >
+                                      {selectedStaffDetails.rebookRate > 70
+                                        ? "Excellent"
+                                        : selectedStaffDetails.rebookRate > 50
+                                        ? "Good"
+                                        : "Needs Improvement"}
+                                    </Badge>
+                                  </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                  <TableCell>Utilization Rate</TableCell>
+                                  <TableCell>
+                                    {selectedStaffDetails.utilization}%
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant={
+                                        selectedStaffDetails.utilization > 85
+                                          ? "default"
+                                          : selectedStaffDetails.utilization >
+                                            70
+                                          ? "secondary"
+                                          : "outline"
+                                      }
+                                    >
+                                      {selectedStaffDetails.utilization > 85
+                                        ? "High"
+                                        : selectedStaffDetails.utilization > 70
+                                        ? "Good"
+                                        : "Low"}
+                                    </Badge>
+                                  </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                  <TableCell>
+                                    Services Per Appointment
+                                  </TableCell>
+                                  <TableCell>
+                                    {selectedStaffDetails.averageServiceTime.toFixed(
+                                      1
+                                    )}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant={
+                                        Number(
+                                          selectedStaffDetails.averageServiceTime
+                                        ) > 1.5
+                                          ? "default"
+                                          : "secondary"
+                                      }
+                                    >
+                                      {Number(
+                                        selectedStaffDetails.averageServiceTime
+                                      ) > 1.5
+                                        ? "High"
+                                        : "Average"}
+                                    </Badge>
+                                  </TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </TabsContent>
+
+                          <TabsContent
+                            value="services"
+                            className="space-y-4 pt-4"
+                          >
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Service</TableHead>
+                                  <TableHead>Bookings</TableHead>
+                                  <TableHead>Performance</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {selectedStaffDetails.topServices &&
+                                Array.isArray(
+                                  selectedStaffDetails.topServices
+                                ) ? (
+                                  selectedStaffDetails.topServices.map(
+                                    (topService: any, idx: any) => (
+                                      <TableRow key={idx}>
+                                        <TableCell className="font-medium">
+                                          {topService.name}
+                                        </TableCell>
+                                        <TableCell>
+                                          {topService.count}
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge variant="secondary">
+                                            {idx === 0
+                                              ? "Most Popular"
+                                              : idx === 1
+                                              ? "Popular"
+                                              : "Regular"}
+                                          </Badge>
+                                        </TableCell>
+                                      </TableRow>
+                                    )
+                                  )
+                                ) : (
+                                  <TableRow>
+                                    <TableCell
+                                      colSpan={3}
+                                      className="text-center py-4 text-muted-foreground"
+                                    >
+                                      No detailed service data available
+                                    </TableCell>
+                                  </TableRow>
+                                )}
+                              </TableBody>
+                            </Table>
+                          </TabsContent>
+
+                          <TabsContent value="tips" className="space-y-4 pt-4">
+                            {staffTipsDiscountsLoading ? (
+                              <div className="flex justify-center p-8">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                              </div>
+                            ) : staffTipsDiscountsError ? (
+                              <div className="text-center p-8 text-destructive">
+                                <p>
+                                  Error loading tips data. Please try again.
+                                </p>
+                              </div>
+                            ) : staffTipsDiscountsData?.data ? (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <Card>
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Total Tips
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      $
+                                      {parseFloat(
+                                        (staffTipsDiscountsData.data.summary
+                                          .totalTips as string) || "0"
+                                      ).toFixed(2)}
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Avg Tip %
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      {parseFloat(
+                                        (staffTipsDiscountsData.data.summary
+                                          .avgTipPercentage as string) || "0"
+                                      ).toFixed(2)}
+                                      %
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Invoices w/ Tip
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      {
+                                        staffTipsDiscountsData.data.summary
+                                          .invoicesWithTip
+                                      }
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            ) : (
+                              <div className="text-center p-8 text-muted-foreground">
+                                No tips data available
+                              </div>
+                            )}
+                          </TabsContent>
+
+                          <TabsContent
+                            value="discounts"
+                            className="space-y-4 pt-4"
+                          >
+                            {staffTipsDiscountsLoading ? (
+                              <div className="flex justify-center p-8">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                              </div>
+                            ) : staffTipsDiscountsError ? (
+                              <div className="text-center p-8 text-destructive">
+                                <p>
+                                  Error loading discounts data. Please try
+                                  again.
+                                </p>
+                              </div>
+                            ) : staffTipsDiscountsData?.data ? (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <Card>
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Total Discounts
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      $
+                                      {parseFloat(
+                                        (staffTipsDiscountsData.data.summary
+                                          .totalDiscounts as string) || "0"
+                                      ).toFixed(2)}
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Avg Discount %
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      {parseFloat(
+                                        (staffTipsDiscountsData.data.summary
+                                          .avgDiscountPercentage as string) ||
+                                          "0"
+                                      ).toFixed(2)}
+                                      %
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardHeader className="p-3">
+                                    <CardTitle className="text-sm">
+                                      Invoices w/ Discount
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="p-3 pt-0">
+                                    <p className="text-2xl font-bold">
+                                      {
+                                        staffTipsDiscountsData.data.summary
+                                          .invoicesWithDiscount
+                                      }
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            ) : (
+                              <div className="text-center p-8 text-muted-foreground">
+                                No discount data available
+                              </div>
+                            )}
+                          </TabsContent>
+                        </Tabs>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-8 text-center text-muted-foreground">
+                      No detailed metrics available for this staff member
+                    </div>
                   )}
                 </DialogContent>
               </Dialog>
@@ -3035,62 +3525,112 @@ export const Reports: React.FC = () => {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Total Tips</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Total Tips
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-2xl font-bold">
-                        ${parseFloat(tipsDiscountsData.data.summary.totalTips as string || '0').toFixed(2)}
+                        $
+                        {parseFloat(
+                          (tipsDiscountsData.data.summary
+                            .totalTips as string) || "0"
+                        ).toFixed(2)}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {parseFloat(tipsDiscountsData.data.summary.avgTipPercentage as string || '0').toFixed(2)}% average tip rate
+                        {parseFloat(
+                          (tipsDiscountsData.data.summary
+                            .avgTipPercentage as string) || "0"
+                        ).toFixed(2)}
+                        % average tip rate
                       </p>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Total Discounts</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Total Discounts
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-2xl font-bold">
-                        ${parseFloat(tipsDiscountsData.data.summary.totalDiscounts as string || '0').toFixed(2)}
+                        $
+                        {parseFloat(
+                          (tipsDiscountsData.data.summary
+                            .totalDiscounts as string) || "0"
+                        ).toFixed(2)}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {parseFloat(tipsDiscountsData.data.summary.avgDiscountPercentage as string || '0').toFixed(2)}% average discount rate
+                        {parseFloat(
+                          (tipsDiscountsData.data.summary
+                            .avgDiscountPercentage as string) || "0"
+                        ).toFixed(2)}
+                        % average discount rate
                       </p>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Invoices with Tips</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Invoices with Tips
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-2xl font-bold">
-                        {parseFloat(tipsDiscountsData.data.summary.invoicesWithTip as string || '0')}
+                        {parseFloat(
+                          (tipsDiscountsData.data.summary
+                            .invoicesWithTip as string) || "0"
+                        )}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {tipsDiscountsData.data.summary.totalInvoices ?
-                          ((parseFloat(tipsDiscountsData.data.summary.invoicesWithTip as string) /
-                            parseFloat(tipsDiscountsData.data.summary.totalInvoices as string)) * 100).toFixed(2) :
-                          '0'}% of total invoices
+                        {tipsDiscountsData.data.summary.totalInvoices
+                          ? (
+                              (parseFloat(
+                                tipsDiscountsData.data.summary
+                                  .invoicesWithTip as string
+                              ) /
+                                parseFloat(
+                                  tipsDiscountsData.data.summary
+                                    .totalInvoices as string
+                                )) *
+                              100
+                            ).toFixed(2)
+                          : "0"}
+                        % of total invoices
                       </p>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Invoices with Discounts</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Invoices with Discounts
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-2xl font-bold">
-                        {parseFloat(tipsDiscountsData.data.summary.invoicesWithDiscount as string || '0')}
+                        {parseFloat(
+                          (tipsDiscountsData.data.summary
+                            .invoicesWithDiscount as string) || "0"
+                        )}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {tipsDiscountsData.data.summary.totalInvoices ?
-                          ((parseFloat(tipsDiscountsData.data.summary.invoicesWithDiscount as string) /
-                            parseFloat(tipsDiscountsData.data.summary.totalInvoices as string)) * 100).toFixed(2) :
-                          '0'}% of total invoices
+                        {tipsDiscountsData.data.summary.totalInvoices
+                          ? (
+                              (parseFloat(
+                                tipsDiscountsData.data.summary
+                                  .invoicesWithDiscount as string
+                              ) /
+                                parseFloat(
+                                  tipsDiscountsData.data.summary
+                                    .totalInvoices as string
+                                )) *
+                              100
+                            ).toFixed(2)
+                          : "0"}
+                        % of total invoices
                       </p>
                     </CardContent>
                   </Card>
