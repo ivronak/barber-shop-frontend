@@ -627,9 +627,9 @@ export const StepWiseInvoiceForm: React.FC<StepWiseInvoiceFormProps> = ({
         <h3 className="text-lg font-medium mb-4">Customer Information</h3>
         {!isGuestUser &&
         <div className="flex flex-col gap-1 mb-2">
-                  <span className="text-black font-bold">Name: <span className="font-normal">{name || "Not provided"}</span></span>
-                  <span className="text-black font-bold">Email: <span className="font-normal">{email || "Not provided"}</span></span>
-                  <div className="flex items-center gap-2">
+                  {name && <span className="text-black font-bold">Name: <span className="font-normal">{name || "Not provided"}</span></span>}
+                  {email && <span className="text-black font-bold">Email: <span className="font-normal">{email || "Not provided"}</span></span>}
+                  {phone && <div className="flex items-center gap-2">
                     <span className="text-black font-bold">Phone:</span>
                     {phone ? <>
                       <span className="font-normal">{formatPhoneNumber(phone)}</span>
@@ -644,7 +644,7 @@ export const StepWiseInvoiceForm: React.FC<StepWiseInvoiceFormProps> = ({
                     </>
                       : <span className="text-muted-foreground">{"Not provided"}</span>
                     }
-                  </div>
+                  </div>}
         </div>
   }
         <Tabs value={activeTab} onValueChange={(value) => {

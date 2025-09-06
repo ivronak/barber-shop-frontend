@@ -47,7 +47,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const [selectedServices, setSelectedServicesRaw] = useState<Service[]>([]);
-  const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
+  const [selectedStaffId, setSelectedStaffId] = useState<string | null>("any_staff");
   const [selectedStaffName, setSelectedStaffName] = useState<string | null>(null);
   const [selectedStaffPosition, setSelectedStaffPosition] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);

@@ -78,6 +78,7 @@ export interface Appointment {
   notes?: string;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
+  break: any
 }
 
 export interface AppointmentService {

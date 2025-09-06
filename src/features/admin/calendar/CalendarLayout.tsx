@@ -28,12 +28,16 @@ export const CalendarLayout: React.FC<CalendarLayoutProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  console.log("__formattedAppointments >> ",appointments)
+
   // Render appropriate view based on screen width
   // Mobile: < 640px
   // Tablet: 640px - 1023px
   // Desktop: >= 1024px
   const renderCalendarView = () => {
     if (windowWidth < 640) {
+  console.log("__formattedAppointments >> 1")
+
       return (
         <MobileCalendarView
           appointments={appointments}
@@ -43,6 +47,8 @@ export const CalendarLayout: React.FC<CalendarLayoutProps> = ({
         />
       );
     } else if (windowWidth >= 640 && windowWidth < 1024) {
+  console.log("__formattedAppointments >> 2")
+
       return (
         <TabletCalendarView
           appointments={appointments}
@@ -52,6 +58,8 @@ export const CalendarLayout: React.FC<CalendarLayoutProps> = ({
         />
       );
     } else {
+  console.log("__formattedAppointments >> 3")
+
       return (
         <DesktopCalendarView
           appointments={appointments}

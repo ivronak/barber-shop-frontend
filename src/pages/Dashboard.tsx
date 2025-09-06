@@ -292,7 +292,7 @@ export const Dashboard: React.FC = () => {
   // Keep upcomingAppointments in sync when server data changes
   useEffect(() => {
     setUpcomingAppointments(mappedAppointments);
-  }, [mappedAppointments]);
+  }, []);
 
   if (isLoading && !dataToShow) {
     return (

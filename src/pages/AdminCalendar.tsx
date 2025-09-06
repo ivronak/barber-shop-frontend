@@ -87,6 +87,7 @@ export const AdminCalendar: React.FC = () => {
               price: service.price,
               duration: service.duration,
             })) || [],
+            break: appointment.staff.breaks
         })
       );
 
@@ -162,6 +163,9 @@ export const AdminCalendar: React.FC = () => {
     selectedStaffId === "all"
       ? appointments
       : appointments.filter((a) => a.staffId === selectedStaffId);
+
+
+      
 
   return (
     <div className="space-y-6">

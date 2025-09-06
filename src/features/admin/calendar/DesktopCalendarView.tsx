@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  format, 
-  addMonths, 
-  subMonths, 
+import {
+  format,
+  addMonths,
+  subMonths,
   addWeeks,
   subWeeks,
   addDays,
   subDays,
-  getDaysInMonth, 
-  isSameDay, 
+  getDaysInMonth,
+  isSameDay,
   startOfMonth,
   startOfWeek,
   endOfWeek,
   startOfDay,
   endOfDay,
 } from 'date-fns';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Clock, 
-  CalendarDays, 
-  LayoutGrid, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  CalendarDays,
+  LayoutGrid,
   LayoutList
 } from 'lucide-react';
 
@@ -108,7 +108,7 @@ export const DesktopCalendarView = ({
       }
     }
   };
-  
+
   // Add CSS for custom scrollbar when component mounts
   useEffect(() => {
     // Create style element
@@ -137,16 +137,16 @@ export const DesktopCalendarView = ({
         scrollbar-color: #ddd transparent;
       }
     `;
-    
+
     // Add it to the document
     document.head.appendChild(style);
-    
+
     // Clean up
     return () => {
       document.head.removeChild(style);
     };
   }, []);
-  
+
   // Navigation functions
   const goToPrevious = () => {
     let newDate: Date;
@@ -160,7 +160,7 @@ export const DesktopCalendarView = ({
     setCurrentDate(newDate);
     onSelectDate?.(newDate);
   };
-  
+
   const goToNext = () => {
     let newDate: Date;
     if (view === 'month') {
@@ -173,7 +173,7 @@ export const DesktopCalendarView = ({
     setCurrentDate(newDate);
     onSelectDate?.(newDate);
   };
-  
+
   const goToToday = () => {
     const today = new Date();
     setCurrentDate(today);
@@ -219,7 +219,7 @@ export const DesktopCalendarView = ({
     const dateStr = format(date, 'yyyy-MM-dd');
     return appointments.filter(appointment => {
       if (appointment.date !== dateStr) return false;
-      
+
       const appointmentHour = parseInt(appointment.time.split(':')[0], 10);
       return appointmentHour === hour;
     });
@@ -292,7 +292,7 @@ export const DesktopCalendarView = ({
           <h2 className="text-xl font-bold">
             {getViewTitle()}
           </h2>
-          
+
           <div className="flex items-center gap-3">
             <div className="flex items-center mr-4">
               <Tabs value={view} onValueChange={(value) => setView(value as CalendarView)} className="w-auto">
@@ -316,7 +316,7 @@ export const DesktopCalendarView = ({
                 </TabsList>
               </Tabs>
             </div>
-            
+
             <Button variant="outline" size="icon" onClick={goToPrevious} className="rounded-full shadow-sm hover:shadow">
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -431,7 +431,7 @@ export const DesktopCalendarView = ({
           const dayAppointments = getAppointmentsForDate(cloneDay);
           const isCurrentMonth = format(currentDate, 'M') === format(cloneDay, 'M');
           const isToday = isSameDay(cloneDay, new Date());
-          
+
           days.push(
             <div
               key={formattedDate}
@@ -460,7 +460,7 @@ export const DesktopCalendarView = ({
                   {format(cloneDay, 'd')}
                 </span>
               </div>
-              
+
               {/* Render appointments */}
               <div className="overflow-y-auto max-h-[80%] mt-1.5 pr-0.5 custom-scrollbar">
                 {dayAppointments.slice(0, 3).map(appointment => (
@@ -473,9 +473,9 @@ export const DesktopCalendarView = ({
                     }}
                   >
                     <div className="flex items-center">
-                      <div 
-                        className="w-2 h-2 rounded-full mr-1 flex-shrink-0" 
-                        style={{ backgroundColor: getStatusColor(appointment.status) }} 
+                      <div
+                        className="w-2 h-2 rounded-full mr-1 flex-shrink-0"
+                        style={{ backgroundColor: getStatusColor(appointment.status) }}
                       />
                       <span className="font-medium">{formatTime12(appointment.time)}</span>
                     </div>
@@ -529,10 +529,10 @@ export const DesktopCalendarView = ({
           </div>
           {weekDays.map((day) => {
             const isToday = isSameDay(day, new Date());
-            
+
             return (
-              <div 
-                key={format(day, 'yyyy-MM-dd')} 
+              <div
+                key={format(day, 'yyyy-MM-dd')}
                 className={cn(
                   "h-16 flex flex-col items-center justify-center p-2 cursor-pointer hover:bg-background-alt transition-colors relative",
                   isToday && "bg-primary/5",
@@ -546,7 +546,7 @@ export const DesktopCalendarView = ({
               >
                 <span className="text-sm font-medium">{format(day, 'EEE')}</span>
                 <span className={cn(
-                  "text-lg font-semibold mt-1 flex items-center justify-center w-8 h-8 rounded-full", 
+                  "text-lg font-semibold mt-1 flex items-center justify-center w-8 h-8 rounded-full",
                   isToday && "text-primary bg-primary/10"
                 )}>
                   {format(day, 'd')}
@@ -555,7 +555,7 @@ export const DesktopCalendarView = ({
             );
           })}
         </div>
-        
+
         {/* Time slots */}
         <div className="grid grid-cols-8 gap-0 rounded-b-lg overflow-hidden border shadow-sm">
           {hours.map((hour, hourIndex) => (
@@ -567,16 +567,16 @@ export const DesktopCalendarView = ({
               )}>
                 {formatHourLabel(hour)}
               </div>
-              
+
               {/* Day columns */}
               {weekDays.map((day, dayIndex) => {
                 const dayAppointments = getAppointmentsForTimeSlot(day, hour);
                 const overlappingAppointments = getAppointmentsOverlappingHour(day, hour);
                 const isLastHour = hourIndex === hours.length - 1;
                 const isLastDay = dayIndex === weekDays.length - 1;
-                
+
                 return (
-                  <div 
+                  <div
                     key={`${format(day, 'yyyy-MM-dd')}-${hour}`}
                     className={cn(
                       "border-t border-l p-1 h-28 relative hover:bg-muted/10 transition-colors",
@@ -633,23 +633,34 @@ export const DesktopCalendarView = ({
   };
 
   // Day View
+  const formatToAmPm = (time: string) => {
+    if (!time) return "";
+    const [h, m] = time.split(":"); // ignore seconds
+    const hourNum = parseInt(h, 10);
+    const minuteNum = parseInt(m, 10);
+    const suffix = hourNum >= 12 ? "PM" : "AM";
+    const hour12 = ((hourNum + 11) % 12) + 1;
+    return `${hour12}:${minuteNum.toString().padStart(2, "0")} ${suffix}`;
+  };
+
   const renderDayView = () => {
     const hours = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 7 PM
-    const dayAppointments = getAppointmentsForDate(currentDate);
+    const dayAppointments: any = getAppointmentsForDate(currentDate);
 
     return (
       <div className="flex flex-col">
+        {/* Header */}
         <div className="text-center mb-4 bg-muted/10 py-3 rounded-lg shadow-sm">
           <div className="font-medium text-muted-foreground">{format(currentDate, 'EEEE')}</div>
           <div className="text-2xl font-bold">{format(currentDate, 'MMMM d, yyyy')}</div>
         </div>
-        
+
         <div className="grid grid-cols-12 gap-4">
-          {/* Time slots */}
+          {/* Time column */}
           <div className="col-span-1">
             {hours.map((hour, index) => (
-              <div 
-                key={hour} 
+              <div
+                key={hour}
                 className={cn(
                   "h-28 flex items-start justify-end pr-2 text-sm text-muted-foreground",
                   index === 0 && "pt-1"
@@ -659,23 +670,43 @@ export const DesktopCalendarView = ({
               </div>
             ))}
           </div>
-          
-          {/* Appointments */}
+
+          {/* Calendar column */}
           <div className="col-span-11 border-l rounded-r-lg overflow-hidden shadow-sm">
-            {hours.map((hour, index) => {
-              const hourAppointments = dayAppointments.filter(appointment => {
-                const appointmentHour = parseInt(appointment.time.split(':')[0], 10);
+            {hours.map((hour) => {
+              const hourAppointments = dayAppointments.filter((appointment: any) => {
+                const appointmentHour = parseInt(appointment.time.split(":")[0], 10);
                 return appointmentHour === hour;
               });
-              
+
               const overlappingAppointments = getAppointmentsOverlappingHour(currentDate, hour);
+
+              // Get breaks for this hour
+              const Isbreak: any = dayAppointments.map((item: any) => item.break);
+              const hourStart = hour * 60;
+              const hourEnd = (hour + 1) * 60;
+
+              let breaksInHour = Isbreak.flat().filter((item: any) => {
+                const [startH, startM] = item.start_time.split(":").map(Number);
+                const [endH, endM] = item.end_time.split(":").map(Number);
+                const startMinutes = startH * 60 + startM;
+                const endMinutes = endH * 60 + endM;
+
+                return endMinutes > hourStart && startMinutes < hourEnd;
+              });
+
+              // Sort breaks by start time
+              breaksInHour.sort((a: any, b: any) => {
+                const [aH, aM] = a.start_time.split(":").map(Number);
+                const [bH, bM] = b.start_time.split(":").map(Number);
+                return aH * 60 + aM - (bH * 60 + bM);
+              });
 
               return (
                 <div
                   key={hour}
                   className={cn(
-                    "h-28 relative hover:bg-muted/10 transition-colors",
-                    index === 0 ? "rounded-tr-lg" : "border-t",
+                    "relative h-28 border-t hover:bg-muted/10 transition-colors rounded-tr-lg"
                   )}
                   onClick={() => {
                     if (onAddAppointment) {
@@ -685,11 +716,23 @@ export const DesktopCalendarView = ({
                     }
                   }}
                 >
-                  {hourAppointments.map((appointment, idx) => {
-                    // Calculate width based on number of appointments in this hour
-                    const width = Math.max(25, 100 / Math.max(overlappingAppointments.length, 1));
+                  {/* Break cards: separate boxes */}
+                  {breaksInHour.length > 0 && (
+                    <div className="absolute top-1/4 left-0 w-full flex space-x-2 px-2">
+                      {breaksInHour.map((br: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className="flex-1 bg-red-200 border border-red-400 rounded-lg px-2 py-1 text-xs text-red-700 text-center"
+                        >
+                          {formatToAmPm(br.start_time)} - {formatToAmPm(br.end_time)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-                    // Calculate vertical positioning based on minutes and duration
+                  {/* Appointment cards */}
+                  {hourAppointments.map((appointment: any, idx: number) => {
+                    const width = Math.max(25, 100 / Math.max(overlappingAppointments.length, 1));
                     const { minute } = parseTimeString(appointment.time);
                     const topPercent = (minute / 60) * 100;
                     const heightPercent = (getAppointmentDuration(appointment) / 60) * 100;
@@ -699,49 +742,39 @@ export const DesktopCalendarView = ({
                     return (
                       <div
                         key={appointment.id}
-                        className="absolute py-2 px-3 m-1 rounded-lg bg-primary/10 border border-primary/20 
-                                 cursor-pointer hover:bg-primary/20 transition-colors overflow-hidden flex flex-col hover:shadow"
+                        className="absolute py-2 px-3 m-1 rounded-lg bg-primary/10 border border-primary/20 cursor-pointer hover:bg-primary/20 flex flex-col overflow-hidden"
                         style={{
                           left: `${idx * width}%`,
                           width: `calc(${width}% - 8px)`,
                           top: `${topPercent}%`,
                           height: `calc(${heightPercent}% - 4px)`,
-                          zIndex: 5,
-                          maxWidth: '350px'
+                          zIndex: 5
                         }}
                         onClick={(e) => {
                           e.stopPropagation();
                           onViewAppointment(appointment.id);
                         }}
                       >
-                        {/* Header */}
                         <div className="flex items-center gap-1.5 mb-1">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: getStatusColor(appointment.status) }} />
-                          <span className="font-semibold text-sm truncate">{isCompact ? formatTime12(appointment.time) : timeRange}</span>
+                          <div
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: getStatusColor(appointment.status) }}
+                          />
+                          <span className="font-semibold text-sm truncate">
+                            {isCompact ? formatTime12(appointment.time) : timeRange}
+                          </span>
                           <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 h-5 whitespace-nowrap rounded-md">
                             {appointment.status}
                           </Badge>
                         </div>
-                        
-                        {/* Content */}
-                        <div className="overflow-hidden flex-1 min-h-0">
-                          {!isCompact && <div className="font-medium text-sm mb-1 truncate">{appointment.customerName}</div>}
-                          <div className="text-xs text-muted-foreground line-clamp-2">
-                            {appointment.services.map(s => s.serviceName).join(', ')}
-                          </div>
+                        {!isCompact && <div className="font-medium text-sm mb-1 truncate">{appointment.customerName}</div>}
+                        <div className="text-xs text-muted-foreground line-clamp-2">
+                          {appointment.services.map((s) => s.serviceName).join(", ")}
                         </div>
-                        
-                        {/* Footer */}
                         <div className="mt-1 pt-1 border-t border-primary/10 flex justify-between items-center flex-shrink-0">
                           <span className="text-xs text-muted-foreground whitespace-nowrap">
                             {getAppointmentDuration(appointment)} min
                           </span>
-                          <Button variant="ghost" size="icon" className="h-6 w-6 -mr-1.5 -my-1 rounded-full" onClick={(e) => {
-                            e.stopPropagation();
-                            onViewAppointment(appointment.id);
-                          }}>
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          </Button>
                         </div>
                       </div>
                     );
@@ -754,6 +787,11 @@ export const DesktopCalendarView = ({
       </div>
     );
   };
+
+
+
+
+
 
   // List View
   const renderListView = () => {
@@ -808,7 +846,7 @@ export const DesktopCalendarView = ({
                         {getAppointmentDuration(appointment)} min
                       </div>
                     </div>
-                    
+
                     <div className="flex-grow">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getStatusColor(appointment.status) }} />
@@ -818,7 +856,7 @@ export const DesktopCalendarView = ({
                         {appointment.services.map(s => s.serviceName).join(', ')}
                       </div>
                     </div>
-                    
+
                     <div className="flex-shrink-0 text-sm">
                       <Badge variant="outline" className={cn(
                         "rounded-full",
